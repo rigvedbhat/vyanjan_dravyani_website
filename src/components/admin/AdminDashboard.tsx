@@ -278,107 +278,110 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
       </div>
 
       <main className="container admin-shell">
-        <aside className="admin-card">
-          <div className="admin-toolbar">
-            <div>
-              <h1 style={{ fontSize: "2.25rem" }}>Dashboard Overview</h1>
-              <p className="muted">Manage your storefront.</p>
+          <div className="card admin-card">
+            <div className="admin-toolbar">
+              <div>
+                <h1 style={{ fontSize: "clamp(1.5rem, 4vw, 2rem)", margin: 0 }}>Dashboard Overview</h1>
+                <p className="muted" style={{ marginTop: 4 }}>Manage your storefront.</p>
+              </div>
+            </div>
+
+            <div className="grid admin-stats" style={{ marginTop: 18 }}>
+              <div className="admin-panel">
+                <span className="feature-icon"><span className="material-symbols-outlined">inventory_2</span></span>
+                <p className="muted">Total Products</p>
+                <h3>{products.length}</h3>
+              </div>
+              <div className="admin-panel">
+                <span className="feature-icon"><span className="material-symbols-outlined">rate_review</span></span>
+                <p className="muted">Approved Reviews</p>
+                <h3>{approvedReviews.length}</h3>
+              </div>
+              <div className="admin-panel">
+                <span className="feature-icon"><span className="material-symbols-outlined">pending_actions</span></span>
+                <p className="muted">Pending Reviews</p>
+                <h3>{pendingReviews.length}</h3>
+              </div>
+              <div className="admin-panel">
+                <span className="feature-icon"><span className="material-symbols-outlined">mail</span></span>
+                <p className="muted">New Inquiries</p>
+                <h3>{inquiries.length}</h3>
+              </div>
+              <div className="admin-panel">
+                <span className="feature-icon"><span className="material-symbols-outlined">star</span></span>
+                <p className="muted">Avg Rating</p>
+                <h3>{avgRating > 0 ? avgRating.toFixed(1) : "—"}</h3>
+              </div>
+              <div className="admin-panel">
+                <span className="feature-icon"><span className="material-symbols-outlined">featured_play_list</span></span>
+                <p className="muted">Featured</p>
+                <h3>{featuredCount}</h3>
+              </div>
+              <div className="admin-panel">
+                <span className="feature-icon"><span className="material-symbols-outlined">photo_library</span></span>
+                <p className="muted">Gallery Images</p>
+                <h3>{totalImages}</h3>
+              </div>
             </div>
           </div>
 
-          <div className="grid admin-stats" style={{ marginTop: 18 }}>
-            <div className="admin-panel">
-              <span className="feature-icon"><span className="material-symbols-outlined">inventory_2</span></span>
-              <p className="muted">Total Products</p>
-              <h3>{products.length}</h3>
-            </div>
-            <div className="admin-panel">
-              <span className="feature-icon"><span className="material-symbols-outlined">rate_review</span></span>
-              <p className="muted">Approved Reviews</p>
-              <h3>{approvedReviews.length}</h3>
-            </div>
-            <div className="admin-panel">
-              <span className="feature-icon"><span className="material-symbols-outlined">pending_actions</span></span>
-              <p className="muted">Pending Reviews</p>
-              <h3>{pendingReviews.length}</h3>
-            </div>
-            <div className="admin-panel">
-              <span className="feature-icon"><span className="material-symbols-outlined">mail</span></span>
-              <p className="muted">New Inquiries</p>
-              <h3>{inquiries.length}</h3>
-            </div>
-            <div className="admin-panel">
-              <span className="feature-icon"><span className="material-symbols-outlined">star</span></span>
-              <p className="muted">Avg Rating</p>
-              <h3>{avgRating > 0 ? avgRating.toFixed(1) : "—"}</h3>
-            </div>
-            <div className="admin-panel">
-              <span className="feature-icon"><span className="material-symbols-outlined">featured_play_list</span></span>
-              <p className="muted">Featured</p>
-              <h3>{featuredCount}</h3>
-            </div>
-            <div className="admin-panel">
-              <span className="feature-icon"><span className="material-symbols-outlined">photo_library</span></span>
-              <p className="muted">Gallery Images</p>
-              <h3>{totalImages}</h3>
-            </div>
-          </div>
-
-          <form className="form-grid" onSubmit={createProduct} style={{ marginTop: 20 }}>
-            <h2 style={{ fontSize: "1.5rem" }}>Add Product</h2>
-            <div className="field">
-              <label htmlFor="new-product-name">Name</label>
-              <input id="new-product-name" name="name" required maxLength={120} />
-            </div>
-            <div className="field">
-              <label htmlFor="new-product-slug">Slug</label>
-              <input id="new-product-slug" name="slug" placeholder="auto from name" maxLength={80} />
-            </div>
-            <div className="field">
-              <label htmlFor="new-product-description">Short Description</label>
-              <textarea id="new-product-description" name="description" maxLength={500} required />
-            </div>
-            <button className="button primary" type="submit" disabled={pending}>
-              <span className="material-symbols-outlined" aria-hidden="true">add</span>
-              New Product
-            </button>
-          </form>
-
-          <div style={{ marginTop: 22 }}>
-            <h2 style={{ fontSize: "1.5rem", marginBottom: 12 }}>Product Inventory</h2>
-            <div className="admin-list">
-              {products.map((product) => (
-                <button
-                  className="admin-list-item"
-                  key={product.id}
-                  type="button"
-                  aria-current={selected?.id === product.id ? "true" : "false"}
-                  onClick={() => setSelected(product)}
-                >
-                  <span className="admin-list-thumb">
-                    <FallbackImage
-                      src={productCoverPath(product)}
-                      fallbackSrc={DEFAULT_PRODUCT_IMAGE}
-                      alt=""
-                      width={90}
-                      height={90}
-                    />
-                  </span>
-                  <span>
-                    <strong>{product.name}</strong>
-                    <small className="muted" style={{ display: "block" }}>
-                      {product.visible ? "Visible" : "Hidden"} · {product.rating.toFixed(1)} rating
-                    </small>
-                  </span>
-                  <span className="material-symbols-outlined" aria-hidden="true">edit</span>
+          <div className="admin-split-grid">
+            <aside className="admin-editor">
+              <form className="card admin-card form-grid" onSubmit={createProduct}>
+                <h2 style={{ fontSize: "1.35rem", margin: 0 }}>Add Product</h2>
+                <div className="field">
+                  <label htmlFor="new-product-name">Name</label>
+                  <input id="new-product-name" name="name" required maxLength={120} />
+                </div>
+                <div className="field">
+                  <label htmlFor="new-product-slug">Slug</label>
+                  <input id="new-product-slug" name="slug" placeholder="auto from name" maxLength={80} />
+                </div>
+                <div className="field">
+                  <label htmlFor="new-product-description">Short Description</label>
+                  <textarea id="new-product-description" name="description" maxLength={500} required />
+                </div>
+                <button className="button primary" type="submit" disabled={pending}>
+                  <span className="material-symbols-outlined" aria-hidden="true">add</span>
+                  New Product
                 </button>
-              ))}
-            </div>
-          </div>
-        </aside>
+              </form>
 
-        <section className="admin-editor">
-          <p className="status-line" aria-live="polite">{status}</p>
+              <div className="card admin-card">
+                <h2 style={{ fontSize: "1.35rem", marginBottom: 12 }}>Product Inventory</h2>
+                <div className="admin-list">
+                  {products.map((product) => (
+                    <button
+                      className="admin-list-item"
+                      key={product.id}
+                      type="button"
+                      aria-current={selected?.id === product.id ? "true" : "false"}
+                      onClick={() => setSelected(product)}
+                    >
+                      <span className="admin-list-thumb">
+                        <FallbackImage
+                          src={productCoverPath(product)}
+                          fallbackSrc={DEFAULT_PRODUCT_IMAGE}
+                          alt=""
+                          width={90}
+                          height={90}
+                        />
+                      </span>
+                      <span>
+                        <strong>{product.name}</strong>
+                        <small className="muted" style={{ display: "block" }}>
+                          {product.visible ? "Visible" : "Hidden"} · {product.rating.toFixed(1)} rating
+                        </small>
+                      </span>
+                      <span className="material-symbols-outlined" aria-hidden="true">edit</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            <section className="admin-editor">
+              <p className="status-line" aria-live="polite">{status}</p>
           {selected ? (
             <>
               <div className="card admin-card">
@@ -741,6 +744,7 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
             </div>
           )}
         </section>
+      </div>
       </main>
     </div>
   );

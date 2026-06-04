@@ -708,27 +708,99 @@ p {
 
 .admin-page {
   min-height: 100vh;
-  padding: 72px 0 32px;
+  padding: 88px 0 32px;
 }
 
 .admin-shell {
   display: grid;
-  gap: 18px;
+  gap: 20px;
+}
+
+.admin-split-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
 }
 
 .admin-card {
-  padding: 18px;
+  padding: clamp(14px, 3vw, 20px);
 }
 
 .admin-panel {
-  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
   border: 1px solid rgba(216, 195, 173, 0.75);
   border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.62);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.admin-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-panel .feature-icon {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.admin-panel .feature-icon .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.admin-panel p.muted {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.admin-panel h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .admin-stats {
+  display: grid;
+  gap: 10px;
   grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .admin-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 859px) {
+  .admin-page {
+    padding-top: 84px;
+  }
 }
 
 .admin-toolbar {
@@ -1152,16 +1224,17 @@ p {
   }
 
   .admin-page {
-    padding-top: 32px;
+    padding-top: 96px;
+    padding-bottom: 48px;
   }
 
   .admin-shell {
-    grid-template-columns: 360px minmax(0, 1fr);
-    align-items: start;
+    grid-template-columns: 1fr;
   }
 
-  .admin-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .admin-split-grid {
+    grid-template-columns: 360px minmax(0, 1fr);
+    align-items: start;
   }
 
   .admin-two {

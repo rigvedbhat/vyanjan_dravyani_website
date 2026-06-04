@@ -37,7 +37,7 @@ export async function getVisibleProducts() {
 export async function getFeaturedProducts() {
   const products = await getVisibleProducts();
   const featured = products.filter((product) => product.featured);
-  return featured.length > 0 ? featured : products.slice(0, 4);
+  return featured.length > 0 ? featured.slice(0, 3) : products.slice(0, 3);
 }
 
 export async function getProductBySlug(slug: string) {
