@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Garam Masala cover">
+  <rect width="900" height="900" fill="#fff7e4"/>
+  <circle cx="450" cy="450" r="318" fill="#ffffff" stroke="#d8c3ad" stroke-width="6"/>
+  <ellipse cx="450" cy="562" rx="270" ry="74" fill="#2b1700" opacity="0.16"/>
+  <path d="M276 498c88-92 260-118 348-50 44 34 28 103-31 126-114 46-254 15-317-76Z" fill="#7a3214"/>
+  <path d="M315 458c74-42 194-57 278-12" fill="none" stroke="#f39c12" stroke-width="18" stroke-linecap="round" opacity="0.78"/>
+  <path d="M270 318l142 62M622 296l-136 88M302 600l130-75M590 596l-108-78" stroke="#865300" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="290" cy="313" r="25" fill="#b02d21"/>
+  <circle cx="620" cy="292" r="25" fill="#b02d21"/>
+  <circle cx="302" cy="600" r="25" fill="#b02d21"/>
+  <circle cx="590" cy="596" r="25" fill="#b02d21"/>
+  <text x="450" y="714" text-anchor="middle" fill="#6e2c00" font-family="Georgia, serif" font-size="62" font-weight="700">Garam Masala</text>
+  <text x="450" y="760" text-anchor="middle" fill="#534434" font-family="Arial, sans-serif" font-size="26" font-weight="700">DEEP FINISHING BLEND</text>
+</svg>

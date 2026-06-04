@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Chaat Masala cover">
+  <rect width="900" height="900" fill="#fff6df"/>
+  <circle cx="450" cy="450" r="318" fill="#ffffff" stroke="#d8c3ad" stroke-width="6"/>
+  <ellipse cx="450" cy="562" rx="268" ry="74" fill="#2b1700" opacity="0.14"/>
+  <ellipse cx="450" cy="460" rx="236" ry="92" fill="#95491c"/>
+  <ellipse cx="450" cy="424" rx="206" ry="72" fill="#d56c32"/>
+  <circle cx="325" cy="318" r="38" fill="#f39c12"/>
+  <circle cx="563" cy="318" r="38" fill="#f39c12"/>
+  <path d="M318 318h74M556 318h74M390 277l43 82M508 276l-42 86" stroke="#865300" stroke-width="12" stroke-linecap="round"/>
+  <text x="450" y="706" text-anchor="middle" fill="#6e2c00" font-family="Georgia, serif" font-size="62" font-weight="700">Chaat Masala</text>
+  <text x="450" y="752" text-anchor="middle" fill="#534434" font-family="Arial, sans-serif" font-size="26" font-weight="700">TANGY FINISHING SPRINKLE</text>
+</svg>

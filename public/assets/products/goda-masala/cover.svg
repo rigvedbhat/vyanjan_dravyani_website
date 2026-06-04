@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Goda Masala cover">
+  <rect width="900" height="900" fill="#fff4d8"/>
+  <circle cx="450" cy="450" r="320" fill="#ffffff" stroke="#d8c3ad" stroke-width="6"/>
+  <ellipse cx="450" cy="560" rx="260" ry="74" fill="#2b1700" opacity="0.16"/>
+  <ellipse cx="450" cy="420" rx="250" ry="106" fill="#9b5c2d"/>
+  <ellipse cx="450" cy="386" rx="232" ry="96" fill="#f3eedc" stroke="#865300" stroke-width="10"/>
+  <ellipse cx="450" cy="378" rx="166" ry="58" fill="#6e2c00"/>
+  <circle cx="326" cy="377" r="13" fill="#f39c12"/>
+  <circle cx="385" cy="350" r="10" fill="#f39c12"/>
+  <circle cx="502" cy="346" r="12" fill="#f39c12"/>
+  <circle cx="570" cy="383" r="11" fill="#f39c12"/>
+  <text x="450" y="650" text-anchor="middle" fill="#6e2c00" font-family="Georgia, serif" font-size="64" font-weight="700">Goda Masala</text>
+  <text x="450" y="698" text-anchor="middle" fill="#534434" font-family="Arial, sans-serif" font-size="26" font-weight="700">ROASTED MAHARASHTRIAN BLEND</text>
+</svg>

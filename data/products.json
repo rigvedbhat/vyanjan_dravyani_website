@@ -1,0 +1,392 @@
+[
+  {
+    "id": "prod_goda_masala",
+    "name": "Goda Masala",
+    "slug": "goda-masala",
+    "description": "Our signature Goda Masala is a traditional Maharashtrian blend of hand-picked spices, slow-roasted to perfection for that authentic sweet and savory aroma.",
+    "specifications": {
+      "Shelf Life": "6 Months",
+      "Spice Level": "Mild",
+      "Key Ingredients": "Coriander seeds, cumin, sesame, stone flower, cinnamon, clove",
+      "Best Before": "Use within 90 days after opening"
+    },
+    "coverImage": "cover.svg",
+    "galleryImages": [
+      {
+        "id": "img_goda_cover",
+        "filename": "cover.svg",
+        "alt": "Goda Masala in a warm heritage product setting",
+        "order": 1
+      }
+    ],
+    "useCases": [
+      {
+        "id": "uc_goda_amti",
+        "title": "Amti",
+        "caption": "Elevate everyday dal with sweet, aromatic depth.",
+        "image": "default.svg",
+        "alt": "Warm Maharashtrian amti serving",
+        "order": 1
+      },
+      {
+        "id": "uc_goda_bharli_vangi",
+        "title": "Bharli Vangi",
+        "caption": "The essential stuffing spice for classic eggplant.",
+        "image": "default.svg",
+        "alt": "Bharli vangi preparation",
+        "order": 2
+      },
+      {
+        "id": "uc_goda_misal",
+        "title": "Misal",
+        "caption": "Adds roasted fragrance to spicy misal bases.",
+        "image": "default.svg",
+        "alt": "Misal with farsan and masala",
+        "order": 3
+      },
+      {
+        "id": "uc_goda_varan_bhaat",
+        "title": "Varan Bhaat",
+        "caption": "A comforting finish for rice and dal meals.",
+        "image": "default.svg",
+        "alt": "Varan bhaat bowl",
+        "order": 4
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev_goda_sneha",
+        "customerName": "Sneha P.",
+        "rating": 5,
+        "text": "Exactly like my grandmother used to make. The aroma hits you as soon as you open the jar.",
+        "approved": true,
+        "createdAt": "2026-06-01T10:00:00.000Z"
+      },
+      {
+        "id": "rev_goda_rahul",
+        "customerName": "Rahul K.",
+        "rating": 5,
+        "text": "Great quality spice blend. Not too spicy, perfectly balanced, and very fresh.",
+        "approved": true,
+        "createdAt": "2026-06-02T11:00:00.000Z"
+      }
+    ],
+    "rating": 5,
+    "visible": true,
+    "featured": true,
+    "badge": "Authentic"
+  },
+  {
+    "id": "prod_tea_masala",
+    "name": "Tea Masala",
+    "slug": "tea-masala",
+    "description": "A fragrant chai companion with warming spices that make every cup rich, cozy, and balanced.",
+    "specifications": {
+      "Shelf Life": "6 Months",
+      "Spice Level": "Warm",
+      "Key Ingredients": "Cardamom, ginger, cinnamon, clove, black pepper",
+      "Best With": "Milk tea, ginger tea, winter tea"
+    },
+    "coverImage": "cover.svg",
+    "galleryImages": [
+      {
+        "id": "img_tea_cover",
+        "filename": "cover.svg",
+        "alt": "Tea Masala with chai spices",
+        "order": 1
+      }
+    ],
+    "useCases": [
+      {
+        "id": "uc_tea_chai",
+        "title": "Masala Chai",
+        "caption": "Aromatic morning tea with comforting spice.",
+        "image": "default.svg",
+        "alt": "Masala chai cup",
+        "order": 1
+      },
+      {
+        "id": "uc_tea_ginger",
+        "title": "Ginger Tea",
+        "caption": "Pairs beautifully with fresh ginger.",
+        "image": "default.svg",
+        "alt": "Ginger tea",
+        "order": 2
+      },
+      {
+        "id": "uc_tea_winter",
+        "title": "Winter Tea",
+        "caption": "A warming cup for cool evenings.",
+        "image": "default.svg",
+        "alt": "Winter tea",
+        "order": 3
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev_tea_meera",
+        "customerName": "Meera S.",
+        "rating": 5,
+        "text": "A pinch makes the whole kitchen smell like fresh chai.",
+        "approved": true,
+        "createdAt": "2026-06-01T12:00:00.000Z"
+      }
+    ],
+    "rating": 5,
+    "visible": true,
+    "featured": true,
+    "badge": "Freshly Ground"
+  },
+  {
+    "id": "prod_garam_masala",
+    "name": "Garam Masala",
+    "slug": "garam-masala",
+    "description": "A deep, balanced finishing blend for curries, rice dishes, and everyday home cooking.",
+    "specifications": {
+      "Shelf Life": "6 Months",
+      "Spice Level": "Medium",
+      "Key Ingredients": "Coriander, cumin, clove, cinnamon, black pepper, bay leaf",
+      "Use": "Add near the end of cooking"
+    },
+    "coverImage": "cover.svg",
+    "galleryImages": [
+      {
+        "id": "img_garam_cover",
+        "filename": "cover.svg",
+        "alt": "Garam Masala product shot",
+        "order": 1
+      }
+    ],
+    "useCases": [
+      {
+        "id": "uc_garam_paneer",
+        "title": "Paneer Curry",
+        "caption": "Rounds out creamy paneer gravies.",
+        "image": "default.svg",
+        "alt": "Paneer curry",
+        "order": 1
+      },
+      {
+        "id": "uc_garam_biryani",
+        "title": "Biryani",
+        "caption": "Adds depth to rice and layered masala.",
+        "image": "default.svg",
+        "alt": "Biryani serving",
+        "order": 2
+      },
+      {
+        "id": "uc_garam_dal",
+        "title": "Dal Tadka",
+        "caption": "A final flourish for smoky tadka.",
+        "image": "default.svg",
+        "alt": "Dal tadka",
+        "order": 3
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev_garam_aditi",
+        "customerName": "Aditi D.",
+        "rating": 5,
+        "text": "Fresh and balanced. It does not overpower the dish.",
+        "approved": true,
+        "createdAt": "2026-05-31T15:00:00.000Z"
+      }
+    ],
+    "rating": 5,
+    "visible": true,
+    "featured": true,
+    "badge": "Hand-ground"
+  },
+  {
+    "id": "prod_turmeric",
+    "name": "Turmeric Powder",
+    "slug": "turmeric",
+    "description": "Bright, earthy turmeric powder for daily cooking, golden milk, pickles, and traditional recipes.",
+    "specifications": {
+      "Shelf Life": "9 Months",
+      "Spice Level": "Mild",
+      "Color": "Golden yellow",
+      "Use": "Curries, haldi milk, pickles"
+    },
+    "coverImage": "cover.svg",
+    "galleryImages": [
+      {
+        "id": "img_turmeric_cover",
+        "filename": "cover.svg",
+        "alt": "Turmeric Powder product shot",
+        "order": 1
+      }
+    ],
+    "useCases": [
+      {
+        "id": "uc_turmeric_milk",
+        "title": "Haldi Milk",
+        "caption": "Golden milk with clean earthy warmth.",
+        "image": "default.svg",
+        "alt": "Haldi milk",
+        "order": 1
+      },
+      {
+        "id": "uc_turmeric_curries",
+        "title": "Curries",
+        "caption": "Adds color and depth to everyday cooking.",
+        "image": "default.svg",
+        "alt": "Curry with turmeric",
+        "order": 2
+      },
+      {
+        "id": "uc_turmeric_pickles",
+        "title": "Pickles",
+        "caption": "Traditional base note for homemade pickles.",
+        "image": "default.svg",
+        "alt": "Pickle preparation",
+        "order": 3
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev_turmeric_priya",
+        "customerName": "Priya M.",
+        "rating": 4,
+        "text": "The color is beautiful and a little goes a long way.",
+        "approved": true,
+        "createdAt": "2026-05-30T15:00:00.000Z"
+      }
+    ],
+    "rating": 4,
+    "visible": true,
+    "featured": false,
+    "badge": "Pure"
+  },
+  {
+    "id": "prod_kanda_lasun",
+    "name": "Kanda Lasun Masala",
+    "slug": "kanda-lasun",
+    "description": "A bold onion-garlic masala with fiery Maharashtrian character for rich curries and non-veg dishes.",
+    "specifications": {
+      "Shelf Life": "6 Months",
+      "Spice Level": "Spicy",
+      "Key Ingredients": "Dry onion, garlic, red chili, coriander, cumin",
+      "Best With": "Tambda rassa, sukka mutton, egg curry"
+    },
+    "coverImage": "cover.svg",
+    "galleryImages": [
+      {
+        "id": "img_kanda_cover",
+        "filename": "cover.svg",
+        "alt": "Kanda Lasun Masala product shot",
+        "order": 1
+      }
+    ],
+    "useCases": [
+      {
+        "id": "uc_kanda_rassa",
+        "title": "Tambda Rassa",
+        "caption": "Fiery Kolhapuri-style gravy depth.",
+        "image": "default.svg",
+        "alt": "Tambda rassa",
+        "order": 1
+      },
+      {
+        "id": "uc_kanda_mutton",
+        "title": "Sukka Mutton",
+        "caption": "Bold roasted flavor for dry preparations.",
+        "image": "default.svg",
+        "alt": "Sukka mutton",
+        "order": 2
+      },
+      {
+        "id": "uc_kanda_egg",
+        "title": "Egg Curry",
+        "caption": "Quickly builds a spicy curry base.",
+        "image": "default.svg",
+        "alt": "Egg curry",
+        "order": 3
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev_kanda_rahul",
+        "customerName": "Rahul K.",
+        "rating": 5,
+        "text": "Quite spicy, just how we like it. Perfect for rassa.",
+        "approved": true,
+        "createdAt": "2026-05-30T16:00:00.000Z"
+      }
+    ],
+    "rating": 5,
+    "visible": true,
+    "featured": true,
+    "badge": "Zesty"
+  },
+  {
+    "id": "prod_chaat_masala",
+    "name": "Chaat Masala",
+    "slug": "chaat-masala",
+    "description": "Tangy, lively, and bright. A finishing sprinkle for snacks, fruit, buttermilk, and salads.",
+    "specifications": {
+      "Shelf Life": "6 Months",
+      "Spice Level": "Tangy",
+      "Key Ingredients": "Dry mango, cumin, black salt, coriander, chili",
+      "Use": "Sprinkle after cooking"
+    },
+    "coverImage": "cover.svg",
+    "galleryImages": [
+      {
+        "id": "img_chaat_cover",
+        "filename": "cover.svg",
+        "alt": "Chaat Masala product shot",
+        "order": 1
+      }
+    ],
+    "useCases": [
+      {
+        "id": "uc_chaat_fruit",
+        "title": "Fruit Salad",
+        "caption": "Adds a tangy lift to fresh fruit.",
+        "image": "default.svg",
+        "alt": "Fruit salad",
+        "order": 1
+      },
+      {
+        "id": "uc_chaat_buttermilk",
+        "title": "Buttermilk",
+        "caption": "A cooling summer drink with sparkle.",
+        "image": "default.svg",
+        "alt": "Buttermilk glass",
+        "order": 2
+      },
+      {
+        "id": "uc_chaat_chaat",
+        "title": "Chaat",
+        "caption": "A finishing note for street-style snacks.",
+        "image": "default.svg",
+        "alt": "Chaat snack",
+        "order": 3
+      },
+      {
+        "id": "uc_chaat_salads",
+        "title": "Salads",
+        "caption": "Makes simple salads brighter.",
+        "image": "default.svg",
+        "alt": "Fresh salad",
+        "order": 4
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev_chaat_neha",
+        "customerName": "Neha R.",
+        "rating": 5,
+        "text": "Great on fruit and chaas. Very fresh taste.",
+        "approved": true,
+        "createdAt": "2026-05-29T16:00:00.000Z"
+      }
+    ],
+    "rating": 5,
+    "visible": true,
+    "featured": false,
+    "badge": "Tangy"
+  }
+]

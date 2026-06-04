@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Product image placeholder">
+  <rect width="900" height="900" fill="#f9f4e2"/>
+  <circle cx="450" cy="450" r="285" fill="#ffffff" stroke="#d8c3ad" stroke-width="6"/>
+  <circle cx="450" cy="450" r="170" fill="#f39c12" opacity="0.18"/>
+  <path d="M300 480c88 70 212 70 300 0 32-25 44-70 31-119-117 14-224 54-331 119Z" fill="#b02d21"/>
+  <path d="M308 552c92 50 191 50 284 0" fill="none" stroke="#865300" stroke-width="18" stroke-linecap="round"/>
+  <text x="450" y="710" text-anchor="middle" fill="#865300" font-family="Georgia, serif" font-size="54" font-weight="700">Vyanjan Dravyani</text>
+</svg>

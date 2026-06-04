@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Turmeric Powder cover">
+  <rect width="900" height="900" fill="#fff8df"/>
+  <circle cx="450" cy="450" r="318" fill="#ffffff" stroke="#d8c3ad" stroke-width="6"/>
+  <ellipse cx="450" cy="555" rx="268" ry="74" fill="#2b1700" opacity="0.14"/>
+  <ellipse cx="450" cy="450" rx="242" ry="102" fill="#f3bc18"/>
+  <ellipse cx="450" cy="420" rx="220" ry="86" fill="#ffd04a"/>
+  <path d="M290 380c85-42 230-55 330-12" fill="none" stroke="#f39c12" stroke-width="28" stroke-linecap="round"/>
+  <path d="M338 272c44 60 80 88 114 112M554 270c-52 54-87 89-112 123" stroke="#95491c" stroke-width="16" stroke-linecap="round" opacity="0.64"/>
+  <text x="450" y="706" text-anchor="middle" fill="#6e2c00" font-family="Georgia, serif" font-size="60" font-weight="700">Turmeric Powder</text>
+  <text x="450" y="752" text-anchor="middle" fill="#534434" font-family="Arial, sans-serif" font-size="26" font-weight="700">GOLDEN EVERYDAY SPICE</text>
+</svg>

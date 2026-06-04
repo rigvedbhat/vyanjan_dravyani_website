@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+dist/
+.env
+.env*.local
+.stitch-inspect/
+.chrome-tmp*/
+.edge-tmp*/
+verify-*.png
+dev-server*.log
+verify-server.log
+tsconfig.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

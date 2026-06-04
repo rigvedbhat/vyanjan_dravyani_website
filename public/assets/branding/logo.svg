@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Vyanjan Dravyani logo">
+  <rect width="512" height="512" rx="92" fill="#fef9e7"/>
+  <circle cx="256" cy="256" r="176" fill="#f39c12" opacity="0.16"/>
+  <circle cx="256" cy="256" r="124" fill="#ffffff" stroke="#865300" stroke-width="10"/>
+  <path d="M181 270c44 42 106 42 150 0 21-20 30-48 26-78-70 6-128 34-176 78Z" fill="#b02d21"/>
+  <path d="M174 306c54 34 116 34 164 0" fill="none" stroke="#865300" stroke-width="14" stroke-linecap="round"/>
+  <path d="M256 136v70" stroke="#865300" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="216" cy="220" r="12" fill="#95491c"/>
+  <circle cx="267" cy="211" r="10" fill="#95491c"/>
+  <circle cx="307" cy="235" r="12" fill="#95491c"/>
+  <path d="M160 374h192" stroke="#865300" stroke-width="12" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Tea Masala cover">
+  <rect width="900" height="900" fill="#fff2d6"/>
+  <circle cx="450" cy="450" r="318" fill="#ffffff" stroke="#d8c3ad" stroke-width="6"/>
+  <path d="M290 408h290v96c0 86-70 156-156 156h-20c-63 0-114-51-114-114Z" fill="#fffaf0" stroke="#865300" stroke-width="10"/>
+  <path d="M580 442h48c45 0 73 45 53 83-17 33-50 50-101 48" fill="none" stroke="#865300" stroke-width="24" stroke-linecap="round"/>
+  <ellipse cx="435" cy="408" rx="146" ry="36" fill="#9a4f1b"/>
+  <path d="M352 302c-34-38 30-60 0-104M440 300c-34-38 30-60 0-104M526 302c-34-38 30-60 0-104" fill="none" stroke="#b02d21" stroke-width="13" stroke-linecap="round" opacity="0.5"/>
+  <circle cx="622" cy="278" r="30" fill="#6e2c00"/>
+  <circle cx="658" cy="326" r="18" fill="#95491c"/>
+  <text x="450" y="724" text-anchor="middle" fill="#6e2c00" font-family="Georgia, serif" font-size="64" font-weight="700">Tea Masala</text>
+  <text x="450" y="770" text-anchor="middle" fill="#534434" font-family="Arial, sans-serif" font-size="26" font-weight="700">WARM CHAI SPICES</text>
+</svg>

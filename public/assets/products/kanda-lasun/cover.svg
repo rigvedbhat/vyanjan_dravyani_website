@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Kanda Lasun Masala cover">
+  <rect width="900" height="900" fill="#fff2df"/>
+  <circle cx="450" cy="450" r="318" fill="#ffffff" stroke="#d8c3ad" stroke-width="6"/>
+  <ellipse cx="450" cy="562" rx="268" ry="74" fill="#2b1700" opacity="0.16"/>
+  <path d="M252 500c102-138 318-167 412-42 31 42 2 100-51 118-111 38-261 11-361-76Z" fill="#b02d21"/>
+  <path d="M314 446c83-48 214-68 314-23" fill="none" stroke="#f79764" stroke-width="20" stroke-linecap="round" opacity="0.8"/>
+  <path d="M311 290c55-24 101 12 94 72-67 13-116-14-94-72Z" fill="#f3eedc" stroke="#865300" stroke-width="9"/>
+  <path d="M524 282c63 8 92 59 59 112-65-14-98-58-59-112Z" fill="#f3eedc" stroke="#865300" stroke-width="9"/>
+  <text x="450" y="700" text-anchor="middle" fill="#6e2c00" font-family="Georgia, serif" font-size="54" font-weight="700">Kanda Lasun</text>
+  <text x="450" y="746" text-anchor="middle" fill="#534434" font-family="Arial, sans-serif" font-size="26" font-weight="700">ONION GARLIC MASALA</text>
+</svg>
