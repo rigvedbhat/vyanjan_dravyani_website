@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { ContactInquiry, Product } from "@/types/product";
+import type { ContactInquiry, Product, ProductReview } from "@/types/product";
 import { sanitizeProductInput, sortByOrder } from "@/lib/security";
 
 const productsFile = path.join(process.cwd(), "data", "products.json");
@@ -127,4 +127,23 @@ export async function addInquiry(inquiry: ContactInquiry) {
   const nextInquiries = [inquiry, ...inquiries].slice(0, 200);
   await writeJson(inquiriesFile, nextInquiries);
   return inquiry;
+}
+
+export async function addReviewToProduct(slug: string, review: ProductReview) {
+  const products = await getProducts();
+  const index = products.findIndex((product) => product.slug === slug && product.visible);
+  if (index === -1) {
+    throw new Error("Product not found.");
+  }
+
+  const product = products[index];
+  const nextProduct = {
+    ...product,
+    reviews: [...product.reviews, review]
+  };
+
+  const nextProducts = [...products];
+  nextProducts[index] = nextProduct;
+  await saveProducts(nextProducts);
+  return nextProduct;
 }

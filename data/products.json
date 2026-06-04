@@ -24,7 +24,7 @@
         "id": "uc_goda_amti",
         "title": "Amti",
         "caption": "Elevate everyday dal with sweet, aromatic depth.",
-        "image": "default.svg",
+        "image": "amti.png",
         "alt": "Warm Maharashtrian amti serving",
         "order": 1
       },
@@ -32,7 +32,7 @@
         "id": "uc_goda_bharli_vangi",
         "title": "Bharli Vangi",
         "caption": "The essential stuffing spice for classic eggplant.",
-        "image": "default.svg",
+        "image": "bharli-vangi.png",
         "alt": "Bharli vangi preparation",
         "order": 2
       },
@@ -40,7 +40,7 @@
         "id": "uc_goda_misal",
         "title": "Misal",
         "caption": "Adds roasted fragrance to spicy misal bases.",
-        "image": "default.svg",
+        "image": "misal.png",
         "alt": "Misal with farsan and masala",
         "order": 3
       },
@@ -48,7 +48,7 @@
         "id": "uc_goda_varan_bhaat",
         "title": "Varan Bhaat",
         "caption": "A comforting finish for rice and dal meals.",
-        "image": "default.svg",
+        "image": "varan-bhaat.png",
         "alt": "Varan bhaat bowl",
         "order": 4
       }
@@ -101,7 +101,7 @@
         "id": "uc_tea_chai",
         "title": "Masala Chai",
         "caption": "Aromatic morning tea with comforting spice.",
-        "image": "default.svg",
+        "image": "masala-chai.png",
         "alt": "Masala chai cup",
         "order": 1
       },
@@ -109,7 +109,7 @@
         "id": "uc_tea_ginger",
         "title": "Ginger Tea",
         "caption": "Pairs beautifully with fresh ginger.",
-        "image": "default.svg",
+        "image": "ginger-tea.png",
         "alt": "Ginger tea",
         "order": 2
       },
@@ -117,7 +117,7 @@
         "id": "uc_tea_winter",
         "title": "Winter Tea",
         "caption": "A warming cup for cool evenings.",
-        "image": "default.svg",
+        "image": "winter-tea.png",
         "alt": "Winter tea",
         "order": 3
       }
@@ -162,7 +162,7 @@
         "id": "uc_garam_paneer",
         "title": "Paneer Curry",
         "caption": "Rounds out creamy paneer gravies.",
-        "image": "default.svg",
+        "image": "paneer-curry.png",
         "alt": "Paneer curry",
         "order": 1
       },
@@ -170,7 +170,7 @@
         "id": "uc_garam_biryani",
         "title": "Biryani",
         "caption": "Adds depth to rice and layered masala.",
-        "image": "default.svg",
+        "image": "biryani.png",
         "alt": "Biryani serving",
         "order": 2
       },
@@ -178,7 +178,7 @@
         "id": "uc_garam_dal",
         "title": "Dal Tadka",
         "caption": "A final flourish for smoky tadka.",
-        "image": "default.svg",
+        "image": "dal-tadka.png",
         "alt": "Dal tadka",
         "order": 3
       }
@@ -223,7 +223,7 @@
         "id": "uc_turmeric_milk",
         "title": "Haldi Milk",
         "caption": "Golden milk with clean earthy warmth.",
-        "image": "default.svg",
+        "image": "haldi-milk.png",
         "alt": "Haldi milk",
         "order": 1
       },
@@ -231,7 +231,7 @@
         "id": "uc_turmeric_curries",
         "title": "Curries",
         "caption": "Adds color and depth to everyday cooking.",
-        "image": "default.svg",
+        "image": "curries.png",
         "alt": "Curry with turmeric",
         "order": 2
       },
@@ -239,7 +239,7 @@
         "id": "uc_turmeric_pickles",
         "title": "Pickles",
         "caption": "Traditional base note for homemade pickles.",
-        "image": "default.svg",
+        "image": "pickles.png",
         "alt": "Pickle preparation",
         "order": 3
       }
@@ -284,7 +284,7 @@
         "id": "uc_kanda_rassa",
         "title": "Tambda Rassa",
         "caption": "Fiery Kolhapuri-style gravy depth.",
-        "image": "default.svg",
+        "image": "tambda-rassa.png",
         "alt": "Tambda rassa",
         "order": 1
       },
@@ -292,7 +292,7 @@
         "id": "uc_kanda_mutton",
         "title": "Sukka Mutton",
         "caption": "Bold roasted flavor for dry preparations.",
-        "image": "default.svg",
+        "image": "sukka-mutton.png",
         "alt": "Sukka mutton",
         "order": 2
       },
@@ -300,7 +300,7 @@
         "id": "uc_kanda_egg",
         "title": "Egg Curry",
         "caption": "Quickly builds a spicy curry base.",
-        "image": "default.svg",
+        "image": "egg-curry.png",
         "alt": "Egg curry",
         "order": 3
       }
@@ -345,7 +345,7 @@
         "id": "uc_chaat_fruit",
         "title": "Fruit Salad",
         "caption": "Adds a tangy lift to fresh fruit.",
-        "image": "default.svg",
+        "image": "fruit-salad.png",
         "alt": "Fruit salad",
         "order": 1
       },
@@ -422,7 +422,7 @@
         "id": "uc_coriander_tadka",
         "title": "Dal Tadka",
         "caption": "Pairs beautifully with cumin and mustard seeds in tempering.",
-        "image": "default.svg",
+        "image": "dal-tadka.png",
         "alt": "Warm yellow dal tadka",
         "order": 2
       }

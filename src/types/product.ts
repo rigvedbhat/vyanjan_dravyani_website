@@ -19,6 +19,7 @@ export type ProductReview = {
   customerName: string;
   rating: number;
   text: string;
+  images?: string[];
   approved: boolean;
   createdAt: string;
 };

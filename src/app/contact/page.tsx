@@ -34,6 +34,10 @@ export default function ContactPage() {
               <ContactForm />
             </section>
           </div>
+          <p className="info-message">
+            <span className="material-symbols-outlined" aria-hidden="true">info</span>
+            We typically respond to inquiries within 24 hours.
+          </p>
         </div>
       </main>
     </PublicShell>

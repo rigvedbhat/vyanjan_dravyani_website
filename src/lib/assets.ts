@@ -34,3 +34,7 @@ export function heroImagePath(filename: string) {
 export function brandingImagePath(filename: string) {
   return `/assets/branding/${encodeURIComponent(filename)}`;
 }
+
+export function reviewImagePath(slug: string, filename: string) {
+  return `/assets/products/${encodeURIComponent(slug)}/reviews/${encodeURIComponent(filename)}`;
+}

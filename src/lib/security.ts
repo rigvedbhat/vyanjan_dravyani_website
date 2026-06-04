@@ -65,11 +65,18 @@ function sanitizeUseCase(useCase: Partial<ProductUseCase>, index: number): Produ
 }
 
 function sanitizeReview(review: Partial<ProductReview>): ProductReview {
+  const rawImages = Array.isArray(review.images) ? review.images : [];
+  const images = rawImages
+    .map((img) => sanitizeFilename(img))
+    .filter((img) => img.length > 0)
+    .slice(0, 3);
+
   return {
     id: sanitizeText(review.id, 120) || makeId("rev"),
     customerName: sanitizeText(review.customerName, 80),
     rating: clampRating(review.rating),
     text: sanitizeText(review.text, 600),
+    images: images.length > 0 ? images : undefined,
     approved: Boolean(review.approved),
     createdAt: sanitizeText(review.createdAt, 80) || new Date().toISOString()
   };

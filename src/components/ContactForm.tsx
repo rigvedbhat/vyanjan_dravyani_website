@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 
 export function ContactForm() {
   const [status, setStatus] = useState("");
+  const [statusType, setStatusType] = useState<"success" | "error" | "">("");
   const [pending, setPending] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -12,24 +13,40 @@ export function ContactForm() {
     const formData = new FormData(form);
     setPending(true);
     setStatus("");
+    setStatusType("");
 
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: formData.get("name"),
-        phone: formData.get("phone"),
-        message: formData.get("message")
-      })
-    });
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          phone: formData.get("phone"),
+          message: formData.get("message")
+        })
+      });
 
-    const result = (await response.json()) as { message?: string };
-    setPending(false);
-    setStatus(result.message ?? (response.ok ? "Message sent." : "Could not send message."));
-    if (response.ok) {
-      form.reset();
+      const result = (await response.json()) as { message?: string };
+
+      if (response.ok) {
+        setStatusType("success");
+        setStatus(result.message ?? "Message sent successfully!");
+        form.reset();
+        setTimeout(() => {
+          setStatus("");
+          setStatusType("");
+        }, 6000);
+      } else {
+        setStatusType("error");
+        setStatus(result.message ?? "Could not send message. Please try again.");
+      }
+    } catch {
+      setStatusType("error");
+      setStatus("Network error. Please try again.");
+    } finally {
+      setPending(false);
     }
   }
 
@@ -49,9 +66,11 @@ export function ContactForm() {
       </div>
       <button className="button primary" type="submit" disabled={pending}>
         <span className="material-symbols-outlined" aria-hidden="true">send</span>
-        {pending ? "Sending" : "Send Message"}
+        {pending ? "Sending…" : "Send Message"}
       </button>
-      <p className="status-line" aria-live="polite">{status}</p>
+      {status && (
+        <p className={`status-line ${statusType}`} aria-live="polite">{status}</p>
+      )}
     </form>
   );
 }

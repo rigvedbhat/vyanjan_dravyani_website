@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DEFAULT_PRODUCT_IMAGE, DEFAULT_USE_CASE_IMAGE, galleryImagePath, productCoverPath, useCaseImagePath } from "@/lib/assets";
+import { DEFAULT_PRODUCT_IMAGE, DEFAULT_USE_CASE_IMAGE, galleryImagePath, productCoverPath, reviewImagePath, useCaseImagePath } from "@/lib/assets";
 import { getProductBySlug } from "@/lib/products";
 import { whatsappUrl } from "@/lib/site";
 import { ContactActions } from "@/components/ContactActions";
 import { FallbackImage } from "@/components/FallbackImage";
 import { PublicShell } from "@/components/PublicShell";
 import { RatingStars } from "@/components/RatingStars";
+import { ReviewForm } from "@/components/ReviewForm";
 import { SectionHeader } from "@/components/SectionHeader";
 import { BackButton } from "@/components/BackButton";
 
@@ -143,17 +144,45 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <section className="section">
           <div className="container">
             <SectionHeader title="Customer Reviews" />
-            <div className="grid review-grid">
-              {reviews.map((review) => (
-                <article className="card review-card" key={review.id}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                    <strong>{review.customerName}</strong>
-                    <RatingStars rating={review.rating} />
-                  </div>
-                  <p className="muted">{review.text}</p>
-                </article>
-              ))}
-            </div>
+            {reviews.length > 0 ? (
+              <div className="grid review-grid">
+                {reviews.map((review) => (
+                  <article className="card review-card" key={review.id}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                      <strong>{review.customerName}</strong>
+                      <RatingStars rating={review.rating} />
+                    </div>
+                    <p className="muted">{review.text}</p>
+                    {review.images && review.images.length > 0 && (
+                      <div className="review-images">
+                        {review.images.map((img) => (
+                          <FallbackImage
+                            key={img}
+                            src={reviewImagePath(product.slug, img)}
+                            fallbackSrc={DEFAULT_PRODUCT_IMAGE}
+                            alt={`Review photo by ${review.customerName}`}
+                            width={180}
+                            height={180}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-reviews">
+                <span className="material-symbols-outlined" aria-hidden="true">rate_review</span>
+                <p>No reviews yet — be the first to share your experience!</p>
+              </div>
+            )}
+
+            <ReviewForm slug={product.slug} />
+
+            <p className="info-message">
+              <span className="material-symbols-outlined" aria-hidden="true">info</span>
+              We typically respond to inquiries within 24 hours.
+            </p>
           </div>
         </section>
       </main>

@@ -57,6 +57,24 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
     [products]
   );
 
+  const pendingReviews = useMemo(
+    () => products.flatMap((product) => product.reviews.filter((review) => !review.approved)),
+    [products]
+  );
+
+  const featuredCount = useMemo(() => products.filter((product) => product.featured).length, [products]);
+
+  const avgRating = useMemo(() => {
+    const rated = products.filter((product) => product.rating > 0);
+    if (rated.length === 0) return 0;
+    return Number((rated.reduce((sum, product) => sum + product.rating, 0) / rated.length).toFixed(1));
+  }, [products]);
+
+  const totalImages = useMemo(
+    () => products.reduce((sum, product) => sum + product.galleryImages.length, 0),
+    [products]
+  );
+
   function syncProduct(product: Product) {
     setProducts((current) => current.map((item) => (item.id === product.id ? product : item)));
     setSelected(product);
@@ -280,9 +298,29 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
               <h3>{approvedReviews.length}</h3>
             </div>
             <div className="admin-panel">
+              <span className="feature-icon"><span className="material-symbols-outlined">pending_actions</span></span>
+              <p className="muted">Pending Reviews</p>
+              <h3>{pendingReviews.length}</h3>
+            </div>
+            <div className="admin-panel">
               <span className="feature-icon"><span className="material-symbols-outlined">mail</span></span>
               <p className="muted">New Inquiries</p>
               <h3>{inquiries.length}</h3>
+            </div>
+            <div className="admin-panel">
+              <span className="feature-icon"><span className="material-symbols-outlined">star</span></span>
+              <p className="muted">Avg Rating</p>
+              <h3>{avgRating > 0 ? avgRating.toFixed(1) : "—"}</h3>
+            </div>
+            <div className="admin-panel">
+              <span className="feature-icon"><span className="material-symbols-outlined">featured_play_list</span></span>
+              <p className="muted">Featured</p>
+              <h3>{featuredCount}</h3>
+            </div>
+            <div className="admin-panel">
+              <span className="feature-icon"><span className="material-symbols-outlined">photo_library</span></span>
+              <p className="muted">Gallery Images</p>
+              <h3>{totalImages}</h3>
             </div>
           </div>
 
