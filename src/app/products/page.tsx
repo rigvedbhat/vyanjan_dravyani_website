@@ -3,6 +3,7 @@ import { getVisibleProducts } from "@/lib/products";
 import { ProductCard } from "@/components/ProductCard";
 import { PublicShell } from "@/components/PublicShell";
 import { SectionHeader } from "@/components/SectionHeader";
+import { BackButton } from "@/components/BackButton";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,7 @@ export default async function ProductsPage() {
     <PublicShell>
       <main className="section">
         <div className="container">
+          <BackButton fallbackUrl="/" label="Back to Home" />
           <SectionHeader
             eyebrow="Shop Masalas"
             title="Products"

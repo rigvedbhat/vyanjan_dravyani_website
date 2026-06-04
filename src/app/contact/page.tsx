@@ -4,6 +4,7 @@ import { ContactActions } from "@/components/ContactActions";
 import { ContactForm } from "@/components/ContactForm";
 import { PublicShell } from "@/components/PublicShell";
 import { SectionHeader } from "@/components/SectionHeader";
+import { BackButton } from "@/components/BackButton";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -15,6 +16,7 @@ export default function ContactPage() {
     <PublicShell>
       <main className="section">
         <div className="container">
+          <BackButton fallbackUrl="/" label="Back to Home" />
           <SectionHeader
             eyebrow="Order or Ask"
             title="Contact"

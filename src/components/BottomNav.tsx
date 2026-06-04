@@ -7,7 +7,7 @@ const navItems = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/products", label: "Shop", icon: "shopping_bag" },
   { href: "/about", label: "Why Us", icon: "verified" },
-  { href: "/contact", label: "Contact", icon: "grid_view" },
+  { href: "/contact", label: "Contact", icon: "chat" },
   { href: "/admin", label: "Admin", icon: "star" }
 ];
 

@@ -8,6 +8,7 @@ import { FallbackImage } from "@/components/FallbackImage";
 import { PublicShell } from "@/components/PublicShell";
 import { RatingStars } from "@/components/RatingStars";
 import { SectionHeader } from "@/components/SectionHeader";
+import { BackButton } from "@/components/BackButton";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <PublicShell>
       <main>
         <section className="section compact">
+          <div className="container">
+            <BackButton fallbackUrl="/products" label="Back to Products" />
+          </div>
           <div className="container product-detail">
             <div className="detail-gallery">
               <div className="card detail-cover">

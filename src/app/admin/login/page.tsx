@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getAdminSession, isAuthConfigured } from "@/lib/auth";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
+import { BackButton } from "@/components/BackButton";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function AdminLoginPage() {
   return (
     <main className="admin-page">
       <div className="container" style={{ maxWidth: 560 }}>
+        <BackButton fallbackUrl="/" label="Back to Home" />
         <AdminLoginForm configured={isAuthConfigured()} />
       </div>
     </main>

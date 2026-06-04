@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PublicShell } from "@/components/PublicShell";
 import { SectionHeader } from "@/components/SectionHeader";
+import { BackButton } from "@/components/BackButton";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -12,6 +13,7 @@ export default function AboutPage() {
     <PublicShell>
       <main className="section">
         <div className="container">
+          <BackButton fallbackUrl="/" label="Back to Home" />
           <SectionHeader
             eyebrow="Our Kitchen"
             title="Homemade With Maharashtrian Memory"

@@ -81,34 +81,18 @@ img {
 }
 
 .material-symbols-outlined {
-  position: relative;
-  display: inline-block;
-  width: 22px;
-  height: 22px;
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   flex: 0 0 auto;
-  overflow: hidden;
-  color: inherit;
-  font-size: 0;
-  line-height: 0;
-}
-
-.material-symbols-outlined::before {
-  position: absolute;
-  inset: 5px;
-  content: "";
-  border: 2px solid currentColor;
-  border-radius: 999px;
-}
-
-.material-symbols-outlined::after {
-  position: absolute;
-  right: 4px;
-  bottom: 4px;
-  width: 5px;
-  height: 5px;
-  content: "";
-  border-radius: 999px;
-  background: currentColor;
+  user-select: none;
 }
 
 .page-shell {
@@ -357,6 +341,38 @@ p {
 .button.danger {
   background: var(--error-soft);
   color: var(--error);
+}
+
+.back-button-container {
+  margin-bottom: 24px;
+  display: flex;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(249, 244, 226, 0.85);
+  border: 1px solid rgba(134, 83, 0, 0.15);
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 180ms ease;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  transform: translateX(-4px);
+}
+
+.back-button span.material-symbols-outlined {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 .hero {
