@@ -10,11 +10,11 @@
       "Key Ingredients": "Coriander seeds, cumin, sesame, stone flower, cinnamon, clove",
       "Best Before": "Use within 90 days after opening"
     },
-    "coverImage": "cover.svg",
+    "coverImage": "goda_masala.jpeg",
     "galleryImages": [
       {
         "id": "img_goda_cover",
-        "filename": "cover.svg",
+        "filename": "goda_masala.jpeg",
         "alt": "Goda Masala in a warm heritage product setting",
         "order": 1
       }
@@ -87,11 +87,11 @@
       "Key Ingredients": "Cardamom, ginger, cinnamon, clove, black pepper",
       "Best With": "Milk tea, ginger tea, winter tea"
     },
-    "coverImage": "cover.svg",
+    "coverImage": "tea_masala.jpeg",
     "galleryImages": [
       {
         "id": "img_tea_cover",
-        "filename": "cover.svg",
+        "filename": "tea_masala.jpeg",
         "alt": "Tea Masala with chai spices",
         "order": 1
       }
@@ -148,11 +148,11 @@
       "Key Ingredients": "Coriander, cumin, clove, cinnamon, black pepper, bay leaf",
       "Use": "Add near the end of cooking"
     },
-    "coverImage": "cover.svg",
+    "coverImage": "garam_masala.jpeg",
     "galleryImages": [
       {
         "id": "img_garam_cover",
-        "filename": "cover.svg",
+        "filename": "garam_masala.jpeg",
         "alt": "Garam Masala product shot",
         "order": 1
       }
@@ -209,11 +209,11 @@
       "Color": "Golden yellow",
       "Use": "Curries, haldi milk, pickles"
     },
-    "coverImage": "cover.svg",
+    "coverImage": "turmeric.jpeg",
     "galleryImages": [
       {
         "id": "img_turmeric_cover",
-        "filename": "cover.svg",
+        "filename": "turmeric.jpeg",
         "alt": "Turmeric Powder product shot",
         "order": 1
       }
@@ -270,11 +270,11 @@
       "Key Ingredients": "Dry onion, garlic, red chili, coriander, cumin",
       "Best With": "Tambda rassa, sukka mutton, egg curry"
     },
-    "coverImage": "cover.svg",
+    "coverImage": "kanda_lasun.jpeg",
     "galleryImages": [
       {
         "id": "img_kanda_cover",
-        "filename": "cover.svg",
+        "filename": "kanda_lasun.jpeg",
         "alt": "Kanda Lasun Masala product shot",
         "order": 1
       }
@@ -331,11 +331,11 @@
       "Key Ingredients": "Dry mango, cumin, black salt, coriander, chili",
       "Use": "Sprinkle after cooking"
     },
-    "coverImage": "cover.svg",
+    "coverImage": "Chat_masala.jpeg",
     "galleryImages": [
       {
         "id": "img_chaat_cover",
-        "filename": "cover.svg",
+        "filename": "Chat_masala.jpeg",
         "alt": "Chaat Masala product shot",
         "order": 1
       }
@@ -388,5 +388,58 @@
     "visible": true,
     "featured": false,
     "badge": "Tangy"
+  },
+  {
+    "id": "prod_coriander_seeds",
+    "name": "Coriander Seeds",
+    "slug": "coriander-seeds",
+    "description": "A fragrant, sweet, and citrusy spice powder ground from premium coriander seeds, acting as the essential flavour backbone for Indian curries, dals, and dry vegetable stir-fries.",
+    "specifications": {
+      "Shelf Life": "6 Months",
+      "Spice Level": "Mild",
+      "Key Ingredients": "100% Coriander seeds",
+      "Use": "Essential base note for gravies, curries, and lentil tadkas"
+    },
+    "coverImage": "cori_powder.jpeg",
+    "galleryImages": [
+      {
+        "id": "img_coriander_cover",
+        "filename": "cori_powder.jpeg",
+        "alt": "Freshly Ground Coriander Seeds Powder",
+        "order": 1
+      }
+    ],
+    "useCases": [
+      {
+        "id": "uc_coriander_curries",
+        "title": "Base Gravies",
+        "caption": "Lends a sweet, thick texture and citrusy depth to curry bases.",
+        "image": "default.svg",
+        "alt": "Gravy preparation with spices",
+        "order": 1
+      },
+      {
+        "id": "uc_coriander_tadka",
+        "title": "Dal Tadka",
+        "caption": "Pairs beautifully with cumin and mustard seeds in tempering.",
+        "image": "default.svg",
+        "alt": "Warm yellow dal tadka",
+        "order": 2
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev_coriander_jayashree",
+        "customerName": "Jayashree M.",
+        "rating": 5,
+        "text": "The aroma is so fresh compared to standard packaged spices! Highly recommend.",
+        "approved": true,
+        "createdAt": "2026-06-04T12:00:00.000Z"
+      }
+    ],
+    "rating": 5,
+    "visible": true,
+    "featured": true,
+    "badge": "Freshly Ground"
   }
 ]
