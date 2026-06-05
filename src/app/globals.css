@@ -109,6 +109,7 @@ img {
 
 .container {
   width: min(100% - 40px, var(--container));
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -643,12 +644,18 @@ p {
 
 .spec-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
   padding: 16px;
   border: 1px solid rgba(216, 195, 173, 0.7);
   border-radius: var(--radius-lg);
   background: var(--surface-low);
+}
+
+@media (min-width: 480px) {
+  .spec-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .spec-item span {
@@ -824,6 +831,7 @@ p {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .admin-list {
