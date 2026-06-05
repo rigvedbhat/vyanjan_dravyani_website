@@ -23,7 +23,11 @@ export function slugify(value: unknown) {
 }
 
 export function sanitizeFilename(value: unknown) {
-  const cleaned = path.basename(String(value ?? "")).replace(filenameChars, "-").slice(0, 120);
+  const str = String(value ?? "");
+  if (str.startsWith("http://") || str.startsWith("https://")) {
+    return str;
+  }
+  const cleaned = path.basename(str).replace(filenameChars, "-").slice(0, 120);
   return cleaned || `image-${Date.now()}`;
 }
 

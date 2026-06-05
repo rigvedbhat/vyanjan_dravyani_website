@@ -8,7 +8,26 @@ const inquiriesCol = db.collection("inquiries");
 
 // ── Helpers ──
 
+function stripUndefined<T>(obj: T): T {
+  if (obj === null || obj === undefined) return obj;
+  if (Array.isArray(obj)) {
+    return obj.map(stripUndefined) as unknown as T;
+  }
+  if (typeof obj === "object") {
+    const clean: any = {};
+    for (const key of Object.keys(obj)) {
+      const val = (obj as any)[key];
+      if (val !== undefined) {
+        clean[key] = stripUndefined(val);
+      }
+    }
+    return clean as T;
+  }
+  return obj;
+}
+
 function docToProduct(doc: FirebaseFirestore.DocumentSnapshot): Product | null {
+
   if (!doc.exists) return null;
   const data = doc.data() as Omit<Product, "id">;
   return sanitizeProductInput({ ...data, id: doc.id });
@@ -60,7 +79,7 @@ export async function saveProducts(products: Product[]): Promise<Product[]> {
 
   for (const product of cleanProducts) {
     const { id, ...data } = product;
-    batch.set(productsCol.doc(id), data);
+    batch.set(productsCol.doc(id), stripUndefined(data));
   }
 
   await batch.commit();
@@ -77,7 +96,7 @@ export async function createProduct(payload: Partial<Product>): Promise<Product>
   }
 
   const { id, ...data } = product;
-  await productsCol.doc(id).set(data);
+  await productsCol.doc(id).set(stripUndefined(data));
   return product;
 }
 
@@ -98,7 +117,7 @@ export async function updateProduct(id: string, payload: Partial<Product>): Prom
   }
 
   const { id: _id, ...data } = nextProduct;
-  await productsCol.doc(id).set(data);
+  await productsCol.doc(id).set(stripUndefined(data));
   return nextProduct;
 }
 
@@ -150,7 +169,7 @@ export async function getInquiries(): Promise<ContactInquiry[]> {
 
 export async function addInquiry(inquiry: ContactInquiry): Promise<ContactInquiry> {
   const { id, ...data } = inquiry;
-  await inquiriesCol.doc(id).set(data);
+  await inquiriesCol.doc(id).set(stripUndefined(data));
   return inquiry;
 }
 
@@ -179,6 +198,6 @@ export async function addReviewToProduct(slug: string, review: ProductReview): P
   });
 
   const { id: _id, ...data } = nextProduct;
-  await productsCol.doc(doc.id).set(data);
+  await productsCol.doc(doc.id).set(stripUndefined(data));
   return nextProduct;
 }

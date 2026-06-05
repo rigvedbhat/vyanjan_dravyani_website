@@ -12,8 +12,15 @@ export async function POST(request: Request, { params }: RouteParams) {
   const { slug } = await params;
 
   const headerStore = await headers();
-  const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (!rateLimit(`review:${ip}`, 3, 30 * 60 * 1000)) {
+  const ip =
+    headerStore.get("x-real-ip")?.trim() ||
+    headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "local";
+
+  // Scope rate limit per product slug and client IP.
+  // If IP defaults to local (which happens if headers are missing or under CDN proxies),
+  // bypass rate limit checks to prevent blocking all users globally.
+  if (ip !== "local" && !rateLimit(`review:${slug}:${ip}`, 5, 15 * 60 * 1000)) {
     return NextResponse.json({ message: "Too many reviews. Please try again later." }, { status: 429 });
   }
 
