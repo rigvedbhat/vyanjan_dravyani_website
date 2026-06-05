@@ -1,10 +1,8 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import fs from "node:fs/promises";
-import path from "node:path";
-import { addReviewToProduct } from "@/lib/products";
-import { getProductBySlug } from "@/lib/products";
-import { makeId, rateLimit, sanitizeText, clampRating, validateImageUpload, safeResolve } from "@/lib/security";
+import { reviewImageFolder, saveImageUpload } from "@/lib/adminAssets";
+import { addReviewToProduct, getProductBySlug } from "@/lib/products";
+import { makeId, rateLimit, sanitizeText, clampRating } from "@/lib/security";
 
 type RouteParams = {
   params: Promise<{ slug: string }>;
@@ -39,8 +37,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     return NextResponse.json({ message: "Name, review text, and a rating (1–5) are required." }, { status: 400 });
   }
 
-  const reviewId = makeId("rev");
-  const imageFilenames: string[] = [];
+  const imageUrls: string[] = [];
 
   const imageFiles = body.getAll("images").filter((item): item is File => item instanceof File && item.size > 0);
   if (imageFiles.length > 3) {
@@ -48,16 +45,12 @@ export async function POST(request: Request, { params }: RouteParams) {
   }
 
   if (imageFiles.length > 0) {
-    const reviewDir = path.join(process.cwd(), "public", "assets", "products", slug, "reviews");
-    await fs.mkdir(reviewDir, { recursive: true });
+    const folder = reviewImageFolder(slug);
 
     for (const file of imageFiles) {
       try {
-        const filename = validateImageUpload(file);
-        const targetPath = safeResolve(reviewDir, filename);
-        const buffer = Buffer.from(await file.arrayBuffer());
-        await fs.writeFile(targetPath, buffer);
-        imageFilenames.push(filename);
+        const url = await saveImageUpload(file, folder);
+        imageUrls.push(url);
       } catch (error) {
         return NextResponse.json(
           { message: error instanceof Error ? error.message : "Image upload failed." },
@@ -68,11 +61,11 @@ export async function POST(request: Request, { params }: RouteParams) {
   }
 
   await addReviewToProduct(slug, {
-    id: reviewId,
+    id: makeId("rev"),
     customerName: name,
     rating,
     text,
-    images: imageFilenames.length > 0 ? imageFilenames : undefined,
+    images: imageUrls.length > 0 ? imageUrls : undefined,
     approved: false,
     createdAt: new Date().toISOString()
   });

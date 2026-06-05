@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { deleteAsset, productAssetDir, saveImageUpload, useCaseAssetDir } from "@/lib/adminAssets";
+import { deleteAsset, productImageFolder, saveImageUpload, useCaseImageFolder } from "@/lib/adminAssets";
 import { requireAdminSession } from "@/lib/auth";
 import { getAdminProductById, updateProduct } from "@/lib/products";
 import { makeId, sanitizeText, sortByOrder } from "@/lib/security";
@@ -31,7 +31,7 @@ export async function POST(request: Request, { params }: ImageRouteProps) {
     const file = getFile(formData);
 
     if (kind === "useCase") {
-      const filename = await saveImageUpload(file, useCaseAssetDir(product.slug));
+      const imageUrl = await saveImageUpload(file, useCaseImageFolder(product.slug));
       const nextProduct = await updateProduct(id, {
         ...product,
         useCases: [
@@ -40,7 +40,7 @@ export async function POST(request: Request, { params }: ImageRouteProps) {
             id: makeId("uc"),
             title: sanitizeText(formData.get("title"), 120),
             caption: sanitizeText(formData.get("caption"), 280),
-            image: filename,
+            image: imageUrl,
             alt: sanitizeText(formData.get("alt"), 160) || sanitizeText(formData.get("title"), 120),
             order: product.useCases.length + 1
           }
@@ -49,17 +49,17 @@ export async function POST(request: Request, { params }: ImageRouteProps) {
       return NextResponse.json({ product: nextProduct });
     }
 
-    const filename = await saveImageUpload(file, productAssetDir(product.slug));
+    const imageUrl = await saveImageUpload(file, productImageFolder(product.slug));
     const image = {
       id: makeId("img"),
-      filename,
+      filename: imageUrl,
       alt: sanitizeText(formData.get("alt"), 160) || product.name,
       order: product.galleryImages.length + 1
     };
 
     const nextProduct = await updateProduct(id, {
       ...product,
-      coverImage: kind === "cover" ? filename : product.coverImage || filename,
+      coverImage: kind === "cover" ? imageUrl : product.coverImage || imageUrl,
       galleryImages: kind === "cover" ? [image, ...product.galleryImages] : [...product.galleryImages, image]
     });
 
@@ -87,11 +87,14 @@ export async function DELETE(request: Request, { params }: ImageRouteProps) {
         throw new Error("Use case image not found.");
       }
 
-      await deleteAsset(useCaseAssetDir(product.slug), useCase.image);
-      const nextUseCases = sortByOrder(product.useCases.filter((item) => item.id !== useCase.id)).map((item, index) => ({
-        ...item,
-        order: index + 1
-      }));
+      // Delete from Cloudinary if it's a cloud URL
+      if (useCase.image.startsWith("http")) {
+        await deleteAsset(useCase.image);
+      }
+
+      const nextUseCases = sortByOrder(
+        product.useCases.filter((item) => item.id !== useCase.id)
+      ).map((item, index) => ({ ...item, order: index + 1 }));
       const nextProduct = await updateProduct(id, { ...product, useCases: nextUseCases });
       return NextResponse.json({ product: nextProduct });
     }
@@ -101,14 +104,19 @@ export async function DELETE(request: Request, { params }: ImageRouteProps) {
       throw new Error("Gallery image not found.");
     }
 
-    await deleteAsset(productAssetDir(product.slug), image.filename);
-    const nextGallery = sortByOrder(product.galleryImages.filter((item) => item.id !== image.id)).map((item, index) => ({
-      ...item,
-      order: index + 1
-    }));
+    // Delete from Cloudinary if it's a cloud URL
+    if (image.filename.startsWith("http")) {
+      await deleteAsset(image.filename);
+    }
+
+    const nextGallery = sortByOrder(
+      product.galleryImages.filter((item) => item.id !== image.id)
+    ).map((item, index) => ({ ...item, order: index + 1 }));
+
     const nextProduct = await updateProduct(id, {
       ...product,
-      coverImage: product.coverImage === image.filename ? nextGallery[0]?.filename ?? "" : product.coverImage,
+      coverImage:
+        product.coverImage === image.filename ? nextGallery[0]?.filename ?? "" : product.coverImage,
       galleryImages: nextGallery
     });
 

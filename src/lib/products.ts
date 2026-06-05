@@ -1,162 +1,130 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import { FieldValue } from "firebase-admin/firestore";
+import { db } from "@/lib/firebase";
 import type { ContactInquiry, Product, ProductReview } from "@/types/product";
 import { sanitizeProductInput, sortByOrder } from "@/lib/security";
 
-const productsFile = path.join(process.cwd(), "data", "products.json");
-const inquiriesFile = path.join(process.cwd(), "data", "inquiries.json");
-const backupsDir = path.join(process.cwd(), "data", "backups");
+const productsCol = db.collection("products");
+const inquiriesCol = db.collection("inquiries");
 
-// ── Write mutex ──
-// Serializes all file writes so concurrent requests (two admin tabs,
-// admin save + customer review submit) can never clobber each other.
-// Each write waits for the previous one to finish before starting.
-let writeChain = Promise.resolve();
+// ── Helpers ──
 
-function serializedWrite<T>(fn: () => Promise<T>): Promise<T> {
-  const next = writeChain.then(fn, fn); // run fn regardless of prior rejection
-  writeChain = next.then(() => {}, () => {}); // swallow to keep chain alive
-  return next;
+function docToProduct(doc: FirebaseFirestore.DocumentSnapshot): Product | null {
+  if (!doc.exists) return null;
+  const data = doc.data() as Omit<Product, "id">;
+  return sanitizeProductInput({ ...data, id: doc.id });
 }
 
-async function readJson<T>(filePath: string, fallback: T): Promise<T> {
-  try {
-    const content = await fs.readFile(filePath, "utf8");
-    return JSON.parse(content) as T;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      return fallback;
-    }
+// ── Read operations ──
 
-    throw error;
-  }
+export async function getProducts(): Promise<Product[]> {
+  const snapshot = await productsCol.get();
+  return snapshot.docs
+    .map(docToProduct)
+    .filter((product): product is Product => product !== null);
 }
 
-async function writeJson<T>(filePath: string, value: T) {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  // Write to a temp file first, then rename for atomic replacement.
-  // This prevents a crash mid-write from corrupting the file.
-  const tmpFile = `${filePath}.tmp`;
-  await fs.writeFile(tmpFile, `${JSON.stringify(value, null, 2)}\n`, "utf8");
-  await fs.rename(tmpFile, filePath);
+export async function getVisibleProducts(): Promise<Product[]> {
+  const snapshot = await productsCol.where("visible", "==", true).get();
+  return snapshot.docs
+    .map(docToProduct)
+    .filter((product): product is Product => product !== null);
 }
 
-// ── Backup helper ──
-// Called before destructive writes. Keeps last 10 timestamped copies.
-const MAX_BACKUPS = 10;
-
-async function backupProducts() {
-  try {
-    await fs.mkdir(backupsDir, { recursive: true });
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const backupFile = path.join(backupsDir, `products-${timestamp}.json`);
-    await fs.copyFile(productsFile, backupFile);
-
-    // Prune old backups beyond MAX_BACKUPS
-    const files = (await fs.readdir(backupsDir))
-      .filter((f) => f.startsWith("products-") && f.endsWith(".json"))
-      .sort();
-    if (files.length > MAX_BACKUPS) {
-      const toDelete = files.slice(0, files.length - MAX_BACKUPS);
-      await Promise.all(toDelete.map((f) => fs.unlink(path.join(backupsDir, f)).catch(() => {})));
-    }
-  } catch {
-    // Backup failure should never block an actual save
-  }
-}
-
-export async function getProducts() {
-  const products = await readJson<Product[]>(productsFile, []);
-  return products.map((product) => sanitizeProductInput(product));
-}
-
-export async function getVisibleProducts() {
-  const products = await getProducts();
-  return products.filter((product) => product.visible);
-}
-
-export async function getFeaturedProducts() {
+export async function getFeaturedProducts(): Promise<Product[]> {
   const products = await getVisibleProducts();
   const featured = products.filter((product) => product.featured);
   return featured.length > 0 ? featured.slice(0, 3) : products.slice(0, 3);
 }
 
-export async function getProductBySlug(slug: string) {
-  const products = await getVisibleProducts();
-  return products.find((product) => product.slug === slug);
+export async function getProductBySlug(slug: string): Promise<Product | undefined> {
+  const snapshot = await productsCol
+    .where("slug", "==", slug)
+    .where("visible", "==", true)
+    .limit(1)
+    .get();
+
+  if (snapshot.empty) return undefined;
+  return docToProduct(snapshot.docs[0]) ?? undefined;
 }
 
-export async function getAdminProductById(id: string) {
-  const products = await getProducts();
-  return products.find((product) => product.id === id);
+export async function getAdminProductById(id: string): Promise<Product | undefined> {
+  const doc = await productsCol.doc(id).get();
+  return docToProduct(doc) ?? undefined;
 }
 
-export async function saveProducts(products: Product[]) {
-  return serializedWrite(async () => {
-    await backupProducts();
-    const cleanProducts = products.map((product) => sanitizeProductInput(product));
-    await writeJson(productsFile, cleanProducts);
-    return cleanProducts;
-  });
+// ── Write operations ──
+
+export async function saveProducts(products: Product[]): Promise<Product[]> {
+  const batch = db.batch();
+  const cleanProducts = products.map((product) => sanitizeProductInput(product));
+
+  for (const product of cleanProducts) {
+    const { id, ...data } = product;
+    batch.set(productsCol.doc(id), data);
+  }
+
+  await batch.commit();
+  return cleanProducts;
 }
 
-export async function createProduct(payload: Partial<Product>) {
-  return serializedWrite(async () => {
-    const products = await getProducts();
-    const product = sanitizeProductInput(payload);
-    if (products.some((item) => item.slug === product.slug)) {
-      throw new Error("A product with this slug already exists.");
-    }
+export async function createProduct(payload: Partial<Product>): Promise<Product> {
+  const product = sanitizeProductInput(payload);
 
-    const nextProducts = [...products, product];
-    await writeJson(productsFile, nextProducts.map((p) => sanitizeProductInput(p)));
-    return product;
-  });
+  // Check slug uniqueness
+  const existing = await productsCol.where("slug", "==", product.slug).limit(1).get();
+  if (!existing.empty) {
+    throw new Error("A product with this slug already exists.");
+  }
+
+  const { id, ...data } = product;
+  await productsCol.doc(id).set(data);
+  return product;
 }
 
-export async function updateProduct(id: string, payload: Partial<Product>) {
-  return serializedWrite(async () => {
-    await backupProducts();
-    const products = await getProducts();
-    const index = products.findIndex((product) => product.id === id);
-    if (index === -1) {
-      throw new Error("Product not found.");
-    }
+export async function updateProduct(id: string, payload: Partial<Product>): Promise<Product> {
+  const doc = await productsCol.doc(id).get();
+  if (!doc.exists) {
+    throw new Error("Product not found.");
+  }
 
-    const nextProduct = sanitizeProductInput(payload, products[index]);
-    const duplicateSlug = products.some((product) => product.id !== id && product.slug === nextProduct.slug);
-    if (duplicateSlug) {
-      throw new Error("A product with this slug already exists.");
-    }
+  const current = docToProduct(doc);
+  const nextProduct = sanitizeProductInput(payload, current ?? undefined);
 
-    const nextProducts = [...products];
-    nextProducts[index] = nextProduct;
-    await writeJson(productsFile, nextProducts);
-    return nextProduct;
-  });
+  // Check slug uniqueness (exclude self)
+  const slugCheck = await productsCol.where("slug", "==", nextProduct.slug).limit(2).get();
+  const duplicateSlug = slugCheck.docs.some((d) => d.id !== id);
+  if (duplicateSlug) {
+    throw new Error("A product with this slug already exists.");
+  }
+
+  const { id: _id, ...data } = nextProduct;
+  await productsCol.doc(id).set(data);
+  return nextProduct;
 }
 
-export async function deleteProduct(id: string) {
-  return serializedWrite(async () => {
-    await backupProducts();
-    const products = await getProducts();
-    const nextProducts = products.filter((product) => product.id !== id);
-    if (nextProducts.length === products.length) {
-      throw new Error("Product not found.");
-    }
+export async function deleteProduct(id: string): Promise<void> {
+  const doc = await productsCol.doc(id).get();
+  if (!doc.exists) {
+    throw new Error("Product not found.");
+  }
 
-    await writeJson(productsFile, nextProducts);
-  });
+  await productsCol.doc(id).delete();
 }
 
-export async function reorderProductImages(id: string, ids: string[], imageType: "gallery" | "useCases") {
+export async function reorderProductImages(
+  id: string,
+  ids: string[],
+  imageType: "gallery" | "useCases"
+): Promise<Product> {
   const product = await getAdminProductById(id);
   if (!product) {
     throw new Error("Product not found.");
   }
 
   if (imageType === "gallery") {
-    const sorted = [...product.galleryImages].sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+    const sorted = [...product.galleryImages].sort(
+      (a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)
+    );
     return updateProduct(id, {
       ...product,
       galleryImages: sortByOrder(sorted.map((image, index) => ({ ...image, order: index + 1 })))
@@ -170,37 +138,47 @@ export async function reorderProductImages(id: string, ids: string[], imageType:
   });
 }
 
-export async function getInquiries() {
-  return readJson<ContactInquiry[]>(inquiriesFile, []);
-}
+// ── Inquiries ──
 
-export async function addInquiry(inquiry: ContactInquiry) {
-  return serializedWrite(async () => {
-    const inquiries = await getInquiries();
-    const nextInquiries = [inquiry, ...inquiries].slice(0, 200);
-    await writeJson(inquiriesFile, nextInquiries);
-    return inquiry;
+export async function getInquiries(): Promise<ContactInquiry[]> {
+  const snapshot = await inquiriesCol.orderBy("createdAt", "desc").limit(200).get();
+  return snapshot.docs.map((doc) => {
+    const data = doc.data() as Omit<ContactInquiry, "id">;
+    return { ...data, id: doc.id } as ContactInquiry;
   });
 }
 
-export async function addReviewToProduct(slug: string, review: ProductReview) {
-  return serializedWrite(async () => {
-    await backupProducts();
-    const products = await getProducts();
-    const index = products.findIndex((product) => product.slug === slug && product.visible);
-    if (index === -1) {
-      throw new Error("Product not found.");
-    }
+export async function addInquiry(inquiry: ContactInquiry): Promise<ContactInquiry> {
+  const { id, ...data } = inquiry;
+  await inquiriesCol.doc(id).set(data);
+  return inquiry;
+}
 
-    const product = products[index];
-    const nextProduct = sanitizeProductInput({
-      ...product,
-      reviews: [...product.reviews, review]
-    });
+// ── Reviews ──
 
-    const nextProducts = [...products];
-    nextProducts[index] = nextProduct;
-    await writeJson(productsFile, nextProducts);
-    return nextProduct;
+export async function addReviewToProduct(slug: string, review: ProductReview): Promise<Product> {
+  const snapshot = await productsCol
+    .where("slug", "==", slug)
+    .where("visible", "==", true)
+    .limit(1)
+    .get();
+
+  if (snapshot.empty) {
+    throw new Error("Product not found.");
+  }
+
+  const doc = snapshot.docs[0];
+  const product = docToProduct(doc);
+  if (!product) {
+    throw new Error("Product not found.");
+  }
+
+  const nextProduct = sanitizeProductInput({
+    ...product,
+    reviews: [...product.reviews, review]
   });
+
+  const { id: _id, ...data } = nextProduct;
+  await productsCol.doc(doc.id).set(data);
+  return nextProduct;
 }

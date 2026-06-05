@@ -1,38 +1,53 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import { safeResolve, validateImageUpload } from "@/lib/security";
+import { deleteFromCloudinary, publicIdFromUrl, uploadToCloudinary } from "@/lib/cloudinaryClient";
+import { validateImageUpload } from "@/lib/security";
 
-export function productAssetDir(slug: string) {
-  return path.join(process.cwd(), "public", "assets", "products", slug);
-}
+/**
+ * Upload an image file to Cloudinary under the given folder.
+ * Returns the secure URL of the uploaded image.
+ */
+export async function saveImageUpload(file: File, folder: string): Promise<string> {
+  // Validate file type & size (reuse existing security layer)
+  validateImageUpload(file);
 
-export function useCaseAssetDir(slug: string) {
-  return path.join(process.cwd(), "public", "assets", "use-cases", slug);
-}
-
-export async function ensureProductAssetFolders(slug: string) {
-  await Promise.all([
-    fs.mkdir(productAssetDir(slug), { recursive: true }),
-    fs.mkdir(useCaseAssetDir(slug), { recursive: true })
-  ]);
-}
-
-export async function saveImageUpload(file: File, targetDir: string) {
-  const filename = validateImageUpload(file);
-  await fs.mkdir(targetDir, { recursive: true });
-  const target = safeResolve(targetDir, filename);
   const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(target, buffer);
-  return filename;
+  const url = await uploadToCloudinary(buffer, folder);
+  return url;
 }
 
-export async function deleteAsset(targetDir: string, filename: string) {
-  const target = safeResolve(targetDir, filename);
-  try {
-    await fs.unlink(target);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-      throw error;
-    }
+/**
+ * Delete an image from Cloudinary by its URL.
+ */
+export async function deleteAsset(imageUrl: string): Promise<void> {
+  const publicId = publicIdFromUrl(imageUrl);
+  if (publicId) {
+    await deleteFromCloudinary(publicId);
   }
+}
+
+/**
+ * No-op for Cloudinary — folders are created implicitly on upload.
+ */
+export async function ensureProductAssetFolders(_slug: string): Promise<void> {
+  // Cloudinary creates folder paths implicitly during upload.
+}
+
+/**
+ * Build the Cloudinary folder path for product images.
+ */
+export function productImageFolder(slug: string): string {
+  return `vyanjan/products/${slug}`;
+}
+
+/**
+ * Build the Cloudinary folder path for use case images.
+ */
+export function useCaseImageFolder(slug: string): string {
+  return `vyanjan/use-cases/${slug}`;
+}
+
+/**
+ * Build the Cloudinary folder path for review images.
+ */
+export function reviewImageFolder(slug: string): string {
+  return `vyanjan/products/${slug}/reviews`;
 }
