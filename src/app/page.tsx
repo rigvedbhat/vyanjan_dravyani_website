@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DEFAULT_USE_CASE_IMAGE, heroImagePath } from "@/lib/assets";
+import { heroImagePath } from "@/lib/assets";
 import { businessName, siteAssets, whatsappUrl } from "@/lib/site";
 import { getFeaturedProducts, getVisibleProducts } from "@/lib/products";
 import { ContactActions } from "@/components/ContactActions";
@@ -145,16 +145,6 @@ export default async function HomePage() {
                 Call or message to place an order, ask about availability, or discuss custom quantity requirements.
               </p>
               <ContactActions />
-              <div style={{ marginTop: 24 }}>
-                <FallbackImage
-                  src={DEFAULT_USE_CASE_IMAGE}
-                  fallbackSrc={DEFAULT_USE_CASE_IMAGE}
-                  alt="Warm spice bowls"
-                  width={640}
-                  height={420}
-                  style={{ borderRadius: 16, width: "100%", background: "var(--surface-high)" }}
-                />
-              </div>
             </div>
             <div className="card contact-panel">
               <h2>Send an Inquiry</h2>
