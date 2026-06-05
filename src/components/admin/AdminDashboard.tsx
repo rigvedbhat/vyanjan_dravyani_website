@@ -51,6 +51,7 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
   const [selected, setSelected] = useState<Product | null>(initialProducts[0] ?? null);
   const [status, setStatus] = useState("");
   const [pending, setPending] = useState(false);
+  const [reviewsExpanded, setReviewsExpanded] = useState(false);
 
   const approvedReviews = useMemo(
     () => products.flatMap((product) => product.reviews.filter((review) => review.approved)),
@@ -287,37 +288,37 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
             </div>
 
             <div className="grid admin-stats" style={{ marginTop: 18 }}>
-              <div className="admin-panel">
+              <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">inventory_2</span></span>
                 <p className="muted">Total Products</p>
                 <h3>{products.length}</h3>
               </div>
-              <div className="admin-panel">
+              <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">rate_review</span></span>
                 <p className="muted">Approved Reviews</p>
                 <h3>{approvedReviews.length}</h3>
               </div>
-              <div className="admin-panel">
+              <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">pending_actions</span></span>
                 <p className="muted">Pending Reviews</p>
                 <h3>{pendingReviews.length}</h3>
               </div>
-              <div className="admin-panel">
+              <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">mail</span></span>
                 <p className="muted">New Inquiries</p>
                 <h3>{inquiries.length}</h3>
               </div>
-              <div className="admin-panel">
+              <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">star</span></span>
                 <p className="muted">Avg Rating</p>
                 <h3>{avgRating > 0 ? avgRating.toFixed(1) : "—"}</h3>
               </div>
-              <div className="admin-panel">
+              <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">featured_play_list</span></span>
                 <p className="muted">Featured</p>
                 <h3>{featuredCount}</h3>
               </div>
-              <div className="admin-panel">
+              <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">photo_library</span></span>
                 <p className="muted">Gallery Images</p>
                 <h3>{totalImages}</h3>
@@ -390,10 +391,16 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
                     <span className="eyebrow">Editing</span>
                     <h2 style={{ marginTop: 10 }}>{selected.name}</h2>
                   </div>
-                  <button className="button danger" type="button" onClick={() => deleteProduct(selected)} disabled={pending}>
-                    <span className="material-symbols-outlined" aria-hidden="true">delete</span>
-                    Delete
-                  </button>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button className="button secondary" type="button" onClick={() => setSelected(null)}>
+                      <span className="material-symbols-outlined" aria-hidden="true">close</span>
+                      Close
+                    </button>
+                    <button className="button danger" type="button" onClick={() => deleteProduct(selected)} disabled={pending}>
+                      <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+                      Delete
+                    </button>
+                  </div>
                 </div>
 
                 <div className="admin-two" style={{ marginTop: 18 }}>
@@ -638,97 +645,111 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
               </div>
 
               <div className="card admin-card">
-                <div className="admin-toolbar">
-                  <h2>Reviews</h2>
-                  <button
-                    className="button ghost"
-                    type="button"
-                    onClick={() =>
-                      updateSelected({
-                        ...selected,
-                        reviews: [
-                          {
-                            id: makeId("rev"),
-                            customerName: "",
-                            rating: 5,
-                            text: "",
-                            approved: false,
-                            createdAt: new Date().toISOString()
-                          },
-                          ...selected.reviews
-                        ]
-                      })
-                    }
-                  >
-                    Add Review
-                  </button>
+                <div className="admin-toolbar" style={{ cursor: "pointer" }} onClick={() => setReviewsExpanded(!reviewsExpanded)}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <h2 style={{ margin: 0 }}>Reviews ({selected.reviews.length})</h2>
+                    <span className="material-symbols-outlined" style={{ transform: reviewsExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
+                      expand_more
+                    </span>
+                  </div>
+                  {reviewsExpanded && (
+                    <button
+                      className="button ghost"
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateSelected({
+                          ...selected,
+                          reviews: [
+                            {
+                              id: makeId("rev"),
+                              customerName: "",
+                              rating: 5,
+                              text: "",
+                              approved: false,
+                              createdAt: new Date().toISOString()
+                            },
+                            ...selected.reviews
+                          ]
+                        });
+                      }}
+                    >
+                      Add Review
+                    </button>
+                  )}
                 </div>
-                <div className="admin-editor" style={{ marginTop: 16 }}>
-                  {selected.reviews.map((review) => (
-                    <div className="admin-panel" key={review.id}>
-                      <div className="form-grid">
-                        <div className="admin-two">
-                          <div className="field">
-                            <label htmlFor={`${review.id}-name`}>Customer Name</label>
-                            <input
-                              id={`${review.id}-name`}
-                              value={review.customerName}
-                              onChange={(event) => updateReview({ ...review, customerName: event.target.value })}
-                            />
-                          </div>
-                          <div className="field">
-                            <label htmlFor={`${review.id}-rating`}>Rating</label>
-                            <select
-                              id={`${review.id}-rating`}
-                              value={review.rating}
-                              onChange={(event) => updateReview({ ...review, rating: Number(event.target.value) })}
+                {reviewsExpanded && (
+                  <>
+                    <div className="admin-editor" style={{ marginTop: 16 }}>
+                      {selected.reviews.map((review) => (
+                        <div className="admin-panel" key={review.id}>
+                          <div className="form-grid">
+                            <div className="admin-two">
+                              <div className="field">
+                                <label htmlFor={`${review.id}-name`}>Customer Name</label>
+                                <input
+                                  id={`${review.id}-name`}
+                                  value={review.customerName}
+                                  onChange={(event) => updateReview({ ...review, customerName: event.target.value })}
+                                />
+                              </div>
+                              <div className="field">
+                                <label htmlFor={`${review.id}-rating`}>Rating</label>
+                                <select
+                                  id={`${review.id}-rating`}
+                                  value={review.rating}
+                                  onChange={(event) => updateReview({ ...review, rating: Number(event.target.value) })}
+                                >
+                                  {[5, 4, 3, 2, 1].map((rating) => (
+                                    <option key={rating} value={rating}>{rating}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                            <RatingStars rating={review.rating} />
+                            <div className="field">
+                              <label htmlFor={`${review.id}-text`}>Review Text</label>
+                              <textarea
+                                id={`${review.id}-text`}
+                                value={review.text}
+                                onChange={(event) => updateReview({ ...review, text: event.target.value })}
+                              />
+                            </div>
+                            <div className="switch-row">
+                              <span>{review.approved ? "Approved" : "Hidden"}</span>
+                              <button
+                                className="switch"
+                                type="button"
+                                role="switch"
+                                aria-checked={review.approved}
+                                onClick={() => updateReview({ ...review, approved: !review.approved })}
+                              >
+                                <span />
+                              </button>
+                            </div>
+                            <button
+                              className="button danger"
+                              type="button"
+                              onClick={() =>
+                                updateSelected({
+                                  ...selected,
+                                  reviews: selected.reviews.filter((item) => item.id !== review.id)
+                                })
+                              }
                             >
-                              {[5, 4, 3, 2, 1].map((rating) => (
-                                <option key={rating} value={rating}>{rating}</option>
-                              ))}
-                            </select>
+                              Delete Review
+                            </button>
                           </div>
                         </div>
-                        <RatingStars rating={review.rating} />
-                        <div className="field">
-                          <label htmlFor={`${review.id}-text`}>Review Text</label>
-                          <textarea
-                            id={`${review.id}-text`}
-                            value={review.text}
-                            onChange={(event) => updateReview({ ...review, text: event.target.value })}
-                          />
-                        </div>
-                        <div className="switch-row">
-                          <span>{review.approved ? "Approved" : "Hidden"}</span>
-                          <button
-                            className="switch"
-                            type="button"
-                            role="switch"
-                            aria-checked={review.approved}
-                            onClick={() => updateReview({ ...review, approved: !review.approved })}
-                          >
-                            <span />
-                          </button>
-                        </div>
-                        <button
-                          className="button danger"
-                          type="button"
-                          onClick={() =>
-                            updateSelected({
-                              ...selected,
-                              reviews: selected.reviews.filter((item) => item.id !== review.id)
-                            })
-                          }
-                        >
-                          Delete Review
-                        </button>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                <button className="button primary" type="button" onClick={() => saveProduct()} disabled={pending}>
-                  Save Reviews
-                </button>
+                    {selected.reviews.length > 0 && (
+                      <button className="button primary" type="button" onClick={() => saveProduct()} disabled={pending} style={{ marginTop: 16 }}>
+                        Save Reviews
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
 
               <div className="card admin-card">

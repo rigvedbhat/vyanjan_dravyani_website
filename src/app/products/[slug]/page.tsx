@@ -122,15 +122,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="grid use-case-grid">
               {product.useCases.map((useCase) => (
                 <article className="card use-case-card" key={useCase.id}>
-                  <div className="use-case-media">
-                    <FallbackImage
-                      src={useCaseImagePath(product, useCase)}
-                      fallbackSrc={DEFAULT_USE_CASE_IMAGE}
-                      alt={useCase.alt}
-                      width={620}
-                      height={430}
-                    />
-                  </div>
+                  {useCase.image && useCase.image !== "default.svg" && (
+                    <div className="use-case-media">
+                      <FallbackImage
+                        src={useCaseImagePath(product, useCase)}
+                        fallbackSrc={DEFAULT_USE_CASE_IMAGE}
+                        alt={useCase.alt}
+                        width={620}
+                        height={430}
+                      />
+                    </div>
+                  )}
                   <div className="use-case-body">
                     <h3>{useCase.title}</h3>
                     <p className="muted">{useCase.caption}</p>
