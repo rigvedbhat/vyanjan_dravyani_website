@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ContactInquiry, Product, ProductImage, ProductReview, ProductUseCase } from "@/types/product";
 import { DEFAULT_PRODUCT_IMAGE, DEFAULT_USE_CASE_IMAGE, galleryImagePath, productCoverPath, useCaseImagePath } from "@/lib/assets";
@@ -8,6 +8,8 @@ import { makeId, slugify, sortByOrder } from "@/lib/security";
 import { ContactActions } from "@/components/ContactActions";
 import { FallbackImage } from "@/components/FallbackImage";
 import { RatingStars } from "@/components/RatingStars";
+import { ToastContainer } from "@/components/admin/ToastContainer";
+import { useToast } from "@/hooks/useToast";
 
 type AdminDashboardProps = {
   initialProducts: Product[];
@@ -45,13 +47,36 @@ function reorder<T extends { order: number }>(items: T[], index: number, directi
   return next.map((entry, orderIndex) => ({ ...entry, order: orderIndex + 1 }));
 }
 
+/** Deep-compare two product objects to detect unsaved edits */
+function hasChanges(a: Product | null, b: Product | null): boolean {
+  if (a === b) return false;
+  if (!a || !b) return false;
+  return JSON.stringify(a) !== JSON.stringify(b);
+}
+
 export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardProps) {
   const router = useRouter();
   const [products, setProducts] = useState(initialProducts);
   const [selected, setSelected] = useState<Product | null>(initialProducts[0] ?? null);
-  const [status, setStatus] = useState("");
   const [pending, setPending] = useState(false);
   const [reviewsExpanded, setReviewsExpanded] = useState(false);
+  const { toasts, showToast, dismissToast } = useToast();
+
+  // Track the "clean" version of the selected product (last saved state)
+  const cleanSelectedRef = useRef<Product | null>(initialProducts[0] ?? null);
+
+  const isDirty = useMemo(() => hasChanges(selected, cleanSelectedRef.current), [selected]);
+
+  // Warn before leaving page with unsaved changes
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      if (isDirty) {
+        e.preventDefault();
+      }
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const approvedReviews = useMemo(
     () => products.flatMap((product) => product.reviews.filter((review) => review.approved)),
@@ -79,6 +104,30 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
   function syncProduct(product: Product) {
     setProducts((current) => current.map((item) => (item.id === product.id ? product : item)));
     setSelected(product);
+    cleanSelectedRef.current = product;
+  }
+
+  /** Confirm discard if there are unsaved changes, returns true if safe to proceed */
+  const confirmDiscard = useCallback((): boolean => {
+    if (!isDirty) return true;
+    return window.confirm("You have unsaved changes. Discard them?");
+  }, [isDirty]);
+
+  /** Safe product switch — warns about unsaved changes */
+  function selectProduct(product: Product) {
+    if (selected?.id === product.id) return;
+    if (!confirmDiscard()) return;
+    setSelected(product);
+    cleanSelectedRef.current = product;
+    setReviewsExpanded(false);
+  }
+
+  /** Safe close — warns about unsaved changes */
+  function closeEditor() {
+    if (!confirmDiscard()) return;
+    setSelected(null);
+    cleanSelectedRef.current = null;
+    setReviewsExpanded(false);
   }
 
   async function saveProduct(product = selected) {
@@ -87,7 +136,6 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
     }
 
     setPending(true);
-    setStatus("");
     const response = await fetch(`/api/admin/products/${product.id}`, {
       method: "PUT",
       headers: {
@@ -100,12 +148,12 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
 
     if (response.ok && result.product) {
       syncProduct(result.product);
-      setStatus("Saved changes.");
+      showToast("Changes saved successfully!", "success");
       router.refresh();
       return;
     }
 
-    setStatus(result.message ?? "Could not save product.");
+    showToast(result.message ?? "Could not save product.", "error");
   }
 
   async function createProduct(event: FormEvent<HTMLFormElement>) {
@@ -116,7 +164,6 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
     const slug = slugify(formData.get("slug") || name);
 
     setPending(true);
-    setStatus("");
     const response = await fetch("/api/admin/products", {
       method: "POST",
       headers: {
@@ -145,13 +192,14 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
     if (response.ok && result.product) {
       setProducts((current) => [...current, result.product as Product]);
       setSelected(result.product);
-      setStatus("Product added.");
+      cleanSelectedRef.current = result.product;
+      showToast("Product added successfully!", "success");
       form.reset();
       router.refresh();
       return;
     }
 
-    setStatus(result.message ?? "Could not add product.");
+    showToast(result.message ?? "Could not add product.", "error");
   }
 
   async function deleteProduct(product: Product) {
@@ -161,7 +209,6 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
     }
 
     setPending(true);
-    setStatus("");
     const response = await fetch(`/api/admin/products/${product.id}`, { method: "DELETE" });
     const result = (await response.json()) as { message?: string };
     setPending(false);
@@ -169,13 +216,15 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
     if (response.ok) {
       const nextProducts = products.filter((item) => item.id !== product.id);
       setProducts(nextProducts);
-      setSelected(nextProducts[0] ?? null);
-      setStatus("Product deleted.");
+      const next = nextProducts[0] ?? null;
+      setSelected(next);
+      cleanSelectedRef.current = next;
+      showToast("Product deleted.", "success");
       router.refresh();
       return;
     }
 
-    setStatus(result.message ?? "Could not delete product.");
+    showToast(result.message ?? "Could not delete product.", "error");
   }
 
   async function uploadImage(event: FormEvent<HTMLFormElement>, kind: "gallery" | "cover" | "useCase") {
@@ -188,7 +237,6 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
     const formData = new FormData(form);
     formData.set("kind", kind);
     setPending(true);
-    setStatus("");
     const response = await fetch(`/api/admin/products/${selected.id}/images`, {
       method: "POST",
       body: formData
@@ -198,13 +246,13 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
 
     if (response.ok && result.product) {
       syncProduct(result.product);
-      setStatus("Image uploaded.");
+      showToast("Image uploaded!", "success");
       form.reset();
       router.refresh();
       return;
     }
 
-    setStatus(result.message ?? "Could not upload image.");
+    showToast(result.message ?? "Could not upload image.", "error");
   }
 
   async function deleteImage(imageType: "gallery" | "useCase", imageId: string) {
@@ -213,7 +261,6 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
     }
 
     setPending(true);
-    setStatus("");
     const response = await fetch(`/api/admin/products/${selected.id}/images`, {
       method: "DELETE",
       headers: {
@@ -226,15 +273,16 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
 
     if (response.ok && result.product) {
       syncProduct(result.product);
-      setStatus("Image removed.");
+      showToast("Image removed.", "success");
       router.refresh();
       return;
     }
 
-    setStatus(result.message ?? "Could not remove image.");
+    showToast(result.message ?? "Could not remove image.", "error");
   }
 
   async function logout() {
+    if (!confirmDiscard()) return;
     await fetch("/api/admin/logout", { method: "POST" });
     router.push("/admin/login");
     router.refresh();
@@ -357,7 +405,7 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
                       key={product.id}
                       type="button"
                       aria-current={selected?.id === product.id ? "true" : "false"}
-                      onClick={() => setSelected(product)}
+                      onClick={() => selectProduct(product)}
                     >
                       <span className="admin-list-thumb">
                         <FallbackImage
@@ -382,7 +430,6 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
             </aside>
 
             <section className="admin-editor">
-              <p className="status-line" aria-live="polite">{status}</p>
           {selected ? (
             <>
               <div className="card admin-card">
@@ -392,7 +439,7 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
                     <h2 style={{ marginTop: 10 }}>{selected.name}</h2>
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
-                    <button className="button secondary" type="button" onClick={() => setSelected(null)}>
+                    <button className="button secondary" type="button" onClick={closeEditor}>
                       <span className="material-symbols-outlined" aria-hidden="true">close</span>
                       Close
                     </button>
@@ -481,10 +528,20 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
                     </div>
                   </div>
                 </div>
-                <button className="button primary" type="button" onClick={() => saveProduct()} disabled={pending}>
-                  <span className="material-symbols-outlined" aria-hidden="true">save</span>
-                  Save Changes
-                </button>
+
+                {/* ── Universal sticky save bar ── */}
+                {isDirty && (
+                  <div className="admin-sticky-save">
+                    <span className="unsaved-badge">
+                      <span className="material-symbols-outlined">edit_note</span>
+                      Unsaved changes
+                    </span>
+                    <button className="button primary" type="button" onClick={() => saveProduct()} disabled={pending}>
+                      <span className="material-symbols-outlined" aria-hidden="true">save</span>
+                      {pending ? "Saving…" : "Save All Changes"}
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="card admin-card">
@@ -639,9 +696,6 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
                     </div>
                   ))}
                 </div>
-                <button className="button primary" type="button" onClick={() => saveProduct()} disabled={pending}>
-                  Save Use Case Order
-                </button>
               </div>
 
               <div className="card admin-card">
@@ -679,76 +733,69 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
                   )}
                 </div>
                 {reviewsExpanded && (
-                  <>
-                    <div className="admin-editor" style={{ marginTop: 16 }}>
-                      {selected.reviews.map((review) => (
-                        <div className="admin-panel" key={review.id}>
-                          <div className="form-grid">
-                            <div className="admin-two">
-                              <div className="field">
-                                <label htmlFor={`${review.id}-name`}>Customer Name</label>
-                                <input
-                                  id={`${review.id}-name`}
-                                  value={review.customerName}
-                                  onChange={(event) => updateReview({ ...review, customerName: event.target.value })}
-                                />
-                              </div>
-                              <div className="field">
-                                <label htmlFor={`${review.id}-rating`}>Rating</label>
-                                <select
-                                  id={`${review.id}-rating`}
-                                  value={review.rating}
-                                  onChange={(event) => updateReview({ ...review, rating: Number(event.target.value) })}
-                                >
-                                  {[5, 4, 3, 2, 1].map((rating) => (
-                                    <option key={rating} value={rating}>{rating}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            </div>
-                            <RatingStars rating={review.rating} />
+                  <div className="admin-editor" style={{ marginTop: 16 }}>
+                    {selected.reviews.map((review) => (
+                      <div className="admin-panel" key={review.id}>
+                        <div className="form-grid">
+                          <div className="admin-two">
                             <div className="field">
-                              <label htmlFor={`${review.id}-text`}>Review Text</label>
-                              <textarea
-                                id={`${review.id}-text`}
-                                value={review.text}
-                                onChange={(event) => updateReview({ ...review, text: event.target.value })}
+                              <label htmlFor={`${review.id}-name`}>Customer Name</label>
+                              <input
+                                id={`${review.id}-name`}
+                                value={review.customerName}
+                                onChange={(event) => updateReview({ ...review, customerName: event.target.value })}
                               />
                             </div>
-                            <div className="switch-row">
-                              <span>{review.approved ? "Approved" : "Hidden"}</span>
-                              <button
-                                className="switch"
-                                type="button"
-                                role="switch"
-                                aria-checked={review.approved}
-                                onClick={() => updateReview({ ...review, approved: !review.approved })}
+                            <div className="field">
+                              <label htmlFor={`${review.id}-rating`}>Rating</label>
+                              <select
+                                id={`${review.id}-rating`}
+                                value={review.rating}
+                                onChange={(event) => updateReview({ ...review, rating: Number(event.target.value) })}
                               >
-                                <span />
-                              </button>
+                                {[5, 4, 3, 2, 1].map((rating) => (
+                                  <option key={rating} value={rating}>{rating}</option>
+                                ))}
+                              </select>
                             </div>
+                          </div>
+                          <RatingStars rating={review.rating} />
+                          <div className="field">
+                            <label htmlFor={`${review.id}-text`}>Review Text</label>
+                            <textarea
+                              id={`${review.id}-text`}
+                              value={review.text}
+                              onChange={(event) => updateReview({ ...review, text: event.target.value })}
+                            />
+                          </div>
+                          <div className="switch-row">
+                            <span>{review.approved ? "Approved" : "Hidden"}</span>
                             <button
-                              className="button danger"
+                              className="switch"
                               type="button"
-                              onClick={() =>
-                                updateSelected({
-                                  ...selected,
-                                  reviews: selected.reviews.filter((item) => item.id !== review.id)
-                                })
-                              }
+                              role="switch"
+                              aria-checked={review.approved}
+                              onClick={() => updateReview({ ...review, approved: !review.approved })}
                             >
-                              Delete Review
+                              <span />
                             </button>
                           </div>
+                          <button
+                            className="button danger"
+                            type="button"
+                            onClick={() =>
+                              updateSelected({
+                                ...selected,
+                                reviews: selected.reviews.filter((item) => item.id !== review.id)
+                              })
+                            }
+                          >
+                            Delete Review
+                          </button>
                         </div>
-                      ))}
-                    </div>
-                    {selected.reviews.length > 0 && (
-                      <button className="button primary" type="button" onClick={() => saveProduct()} disabled={pending} style={{ marginTop: 16 }}>
-                        Save Reviews
-                      </button>
-                    )}
-                  </>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 
@@ -767,6 +814,8 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
         </section>
       </div>
       </main>
+
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }

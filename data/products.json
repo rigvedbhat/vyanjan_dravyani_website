@@ -53,24 +53,7 @@
         "order": 4
       }
     ],
-    "reviews": [
-      {
-        "id": "rev_goda_sneha",
-        "customerName": "Sneha P.",
-        "rating": 5,
-        "text": "Exactly like my grandmother used to make. The aroma hits you as soon as you open the jar.",
-        "approved": true,
-        "createdAt": "2026-06-01T10:00:00.000Z"
-      },
-      {
-        "id": "rev_goda_rahul",
-        "customerName": "Rahul K.",
-        "rating": 5,
-        "text": "Great quality spice blend. Not too spicy, perfectly balanced, and very fresh.",
-        "approved": true,
-        "createdAt": "2026-06-02T11:00:00.000Z"
-      }
-    ],
+    "reviews": [],
     "rating": 5,
     "visible": true,
     "featured": true,
@@ -122,16 +105,7 @@
         "order": 3
       }
     ],
-    "reviews": [
-      {
-        "id": "rev_tea_meera",
-        "customerName": "Meera S.",
-        "rating": 5,
-        "text": "A pinch makes the whole kitchen smell like fresh chai.",
-        "approved": true,
-        "createdAt": "2026-06-01T12:00:00.000Z"
-      }
-    ],
+    "reviews": [],
     "rating": 5,
     "visible": true,
     "featured": false,
@@ -244,16 +218,7 @@
         "order": 3
       }
     ],
-    "reviews": [
-      {
-        "id": "rev_turmeric_priya",
-        "customerName": "Priya M.",
-        "rating": 4,
-        "text": "The color is beautiful and a little goes a long way.",
-        "approved": true,
-        "createdAt": "2026-05-30T15:00:00.000Z"
-      }
-    ],
+    "reviews": [],
     "rating": 4,
     "visible": true,
     "featured": false,

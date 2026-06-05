@@ -1326,3 +1326,124 @@ p {
     font-size: 16px;
   }
 }
+
+/* ── Toast notifications ── */
+.toast-container {
+  position: fixed;
+  z-index: 9999;
+  bottom: 90px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(380px, calc(100vw - 32px));
+}
+
+@media (min-width: 860px) {
+  .toast-container {
+    bottom: 24px;
+    right: 24px;
+  }
+}
+
+.toast-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  animation: toastSlideIn 0.3s ease forwards;
+  min-width: 0;
+}
+
+.toast-success {
+  background: linear-gradient(135deg, #2e7d32, #388e3c);
+}
+
+.toast-error {
+  background: linear-gradient(135deg, #c62828, #d32f2f);
+}
+
+.toast-item .material-symbols-outlined {
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.toast-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.toast-close:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.toast-close .material-symbols-outlined {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Sticky save bar ── */
+.admin-sticky-save {
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px clamp(14px, 3vw, 20px);
+  border-top: 2px solid var(--primary-bright);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: rgba(254, 249, 231, 0.97);
+  box-shadow: 0 -4px 20px rgba(110, 44, 0, 0.1);
+  backdrop-filter: blur(10px);
+  animation: fadeSlideIn 0.25s ease;
+}
+
+.admin-sticky-save .unsaved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.admin-sticky-save .unsaved-badge .material-symbols-outlined {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--primary-bright);
+}
