@@ -5,6 +5,19 @@ import { sanitizeProductInput, sortByOrder } from "@/lib/security";
 
 const productsFile = path.join(process.cwd(), "data", "products.json");
 const inquiriesFile = path.join(process.cwd(), "data", "inquiries.json");
+const backupsDir = path.join(process.cwd(), "data", "backups");
+
+// ── Write mutex ──
+// Serializes all file writes so concurrent requests (two admin tabs,
+// admin save + customer review submit) can never clobber each other.
+// Each write waits for the previous one to finish before starting.
+let writeChain = Promise.resolve();
+
+function serializedWrite<T>(fn: () => Promise<T>): Promise<T> {
+  const next = writeChain.then(fn, fn); // run fn regardless of prior rejection
+  writeChain = next.then(() => {}, () => {}); // swallow to keep chain alive
+  return next;
+}
 
 async function readJson<T>(filePath: string, fallback: T): Promise<T> {
   try {
@@ -21,7 +34,35 @@ async function readJson<T>(filePath: string, fallback: T): Promise<T> {
 
 async function writeJson<T>(filePath: string, value: T) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  // Write to a temp file first, then rename for atomic replacement.
+  // This prevents a crash mid-write from corrupting the file.
+  const tmpFile = `${filePath}.tmp`;
+  await fs.writeFile(tmpFile, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  await fs.rename(tmpFile, filePath);
+}
+
+// ── Backup helper ──
+// Called before destructive writes. Keeps last 10 timestamped copies.
+const MAX_BACKUPS = 10;
+
+async function backupProducts() {
+  try {
+    await fs.mkdir(backupsDir, { recursive: true });
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const backupFile = path.join(backupsDir, `products-${timestamp}.json`);
+    await fs.copyFile(productsFile, backupFile);
+
+    // Prune old backups beyond MAX_BACKUPS
+    const files = (await fs.readdir(backupsDir))
+      .filter((f) => f.startsWith("products-") && f.endsWith(".json"))
+      .sort();
+    if (files.length > MAX_BACKUPS) {
+      const toDelete = files.slice(0, files.length - MAX_BACKUPS);
+      await Promise.all(toDelete.map((f) => fs.unlink(path.join(backupsDir, f)).catch(() => {})));
+    }
+  } catch {
+    // Backup failure should never block an actual save
+  }
 }
 
 export async function getProducts() {
@@ -51,50 +92,61 @@ export async function getAdminProductById(id: string) {
 }
 
 export async function saveProducts(products: Product[]) {
-  const cleanProducts = products.map((product) => sanitizeProductInput(product));
-  await writeJson(productsFile, cleanProducts);
-  return cleanProducts;
+  return serializedWrite(async () => {
+    await backupProducts();
+    const cleanProducts = products.map((product) => sanitizeProductInput(product));
+    await writeJson(productsFile, cleanProducts);
+    return cleanProducts;
+  });
 }
 
 export async function createProduct(payload: Partial<Product>) {
-  const products = await getProducts();
-  const product = sanitizeProductInput(payload);
-  if (products.some((item) => item.slug === product.slug)) {
-    throw new Error("A product with this slug already exists.");
-  }
+  return serializedWrite(async () => {
+    const products = await getProducts();
+    const product = sanitizeProductInput(payload);
+    if (products.some((item) => item.slug === product.slug)) {
+      throw new Error("A product with this slug already exists.");
+    }
 
-  const nextProducts = [...products, product];
-  await saveProducts(nextProducts);
-  return product;
+    const nextProducts = [...products, product];
+    await writeJson(productsFile, nextProducts.map((p) => sanitizeProductInput(p)));
+    return product;
+  });
 }
 
 export async function updateProduct(id: string, payload: Partial<Product>) {
-  const products = await getProducts();
-  const index = products.findIndex((product) => product.id === id);
-  if (index === -1) {
-    throw new Error("Product not found.");
-  }
+  return serializedWrite(async () => {
+    await backupProducts();
+    const products = await getProducts();
+    const index = products.findIndex((product) => product.id === id);
+    if (index === -1) {
+      throw new Error("Product not found.");
+    }
 
-  const nextProduct = sanitizeProductInput(payload, products[index]);
-  const duplicateSlug = products.some((product) => product.id !== id && product.slug === nextProduct.slug);
-  if (duplicateSlug) {
-    throw new Error("A product with this slug already exists.");
-  }
+    const nextProduct = sanitizeProductInput(payload, products[index]);
+    const duplicateSlug = products.some((product) => product.id !== id && product.slug === nextProduct.slug);
+    if (duplicateSlug) {
+      throw new Error("A product with this slug already exists.");
+    }
 
-  const nextProducts = [...products];
-  nextProducts[index] = nextProduct;
-  await saveProducts(nextProducts);
-  return nextProduct;
+    const nextProducts = [...products];
+    nextProducts[index] = nextProduct;
+    await writeJson(productsFile, nextProducts);
+    return nextProduct;
+  });
 }
 
 export async function deleteProduct(id: string) {
-  const products = await getProducts();
-  const nextProducts = products.filter((product) => product.id !== id);
-  if (nextProducts.length === products.length) {
-    throw new Error("Product not found.");
-  }
+  return serializedWrite(async () => {
+    await backupProducts();
+    const products = await getProducts();
+    const nextProducts = products.filter((product) => product.id !== id);
+    if (nextProducts.length === products.length) {
+      throw new Error("Product not found.");
+    }
 
-  await saveProducts(nextProducts);
+    await writeJson(productsFile, nextProducts);
+  });
 }
 
 export async function reorderProductImages(id: string, ids: string[], imageType: "gallery" | "useCases") {
@@ -123,27 +175,32 @@ export async function getInquiries() {
 }
 
 export async function addInquiry(inquiry: ContactInquiry) {
-  const inquiries = await getInquiries();
-  const nextInquiries = [inquiry, ...inquiries].slice(0, 200);
-  await writeJson(inquiriesFile, nextInquiries);
-  return inquiry;
+  return serializedWrite(async () => {
+    const inquiries = await getInquiries();
+    const nextInquiries = [inquiry, ...inquiries].slice(0, 200);
+    await writeJson(inquiriesFile, nextInquiries);
+    return inquiry;
+  });
 }
 
 export async function addReviewToProduct(slug: string, review: ProductReview) {
-  const products = await getProducts();
-  const index = products.findIndex((product) => product.slug === slug && product.visible);
-  if (index === -1) {
-    throw new Error("Product not found.");
-  }
+  return serializedWrite(async () => {
+    await backupProducts();
+    const products = await getProducts();
+    const index = products.findIndex((product) => product.slug === slug && product.visible);
+    if (index === -1) {
+      throw new Error("Product not found.");
+    }
 
-  const product = products[index];
-  const nextProduct = {
-    ...product,
-    reviews: [...product.reviews, review]
-  };
+    const product = products[index];
+    const nextProduct = sanitizeProductInput({
+      ...product,
+      reviews: [...product.reviews, review]
+    });
 
-  const nextProducts = [...products];
-  nextProducts[index] = nextProduct;
-  await saveProducts(nextProducts);
-  return nextProduct;
+    const nextProducts = [...products];
+    nextProducts[index] = nextProduct;
+    await writeJson(productsFile, nextProducts);
+    return nextProduct;
+  });
 }
