@@ -76,6 +76,12 @@ img {
   max-width: 100%;
 }
 
+input[type="file"] {
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 :focus-visible {
   outline: 3px solid rgba(243, 156, 18, 0.55);
   outline-offset: 3px;
@@ -746,6 +752,8 @@ p {
   border: 1px solid rgba(216, 195, 173, 0.75);
   border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.62);
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .admin-stat-card {
@@ -855,6 +863,18 @@ p {
   background: var(--surface);
   padding: 10px;
   text-align: left;
+  min-width: 0;
+}
+
+.admin-list-item > span:nth-child(2) {
+  min-width: 0;
+}
+
+.admin-list-item > span:nth-child(2) strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-list-item[aria-current="true"] {
@@ -892,7 +912,7 @@ p {
 
 .admin-image-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 10px;
 }
 
@@ -914,6 +934,8 @@ p {
   display: flex;
   gap: 6px;
   padding: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .switch-row {
@@ -1276,5 +1298,31 @@ p {
 
   .admin-image-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .button {
+    padding: 10px 14px;
+    font-size: 13px;
+    min-height: 40px;
+    border-radius: 10px;
+    gap: 6px;
+  }
+  .button span.material-symbols-outlined {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  .tile-actions {
+    gap: 4px;
+    padding: 6px;
+  }
+  .tile-actions .icon-button {
+    width: 32px;
+    height: 32px;
+  }
+  .tile-actions .icon-button .material-symbols-outlined {
+    font-size: 16px;
   }
 }
