@@ -462,6 +462,8 @@ p {
   border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow);
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .product-card {
@@ -723,6 +725,8 @@ p {
 .admin-shell {
   display: grid;
   gap: 20px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .admin-split-grid {
@@ -730,6 +734,7 @@ p {
   gap: 20px;
   grid-template-columns: 1fr;
   max-width: 100%;
+  min-width: 0;
 }
 
 .admin-card {
@@ -874,11 +879,15 @@ p {
 .admin-editor {
   display: grid;
   gap: 16px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .admin-two {
   display: grid;
   gap: 16px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .admin-image-grid {
