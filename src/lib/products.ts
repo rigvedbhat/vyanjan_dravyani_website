@@ -173,6 +173,15 @@ export async function addInquiry(inquiry: ContactInquiry): Promise<ContactInquir
   return inquiry;
 }
 
+export async function deleteInquiry(id: string): Promise<void> {
+  const doc = await inquiriesCol.doc(id).get();
+  if (!doc.exists) {
+    throw new Error("Inquiry not found.");
+  }
+  await inquiriesCol.doc(id).delete();
+}
+
+
 // ── Reviews ──
 
 export async function addReviewToProduct(slug: string, review: ProductReview): Promise<Product> {

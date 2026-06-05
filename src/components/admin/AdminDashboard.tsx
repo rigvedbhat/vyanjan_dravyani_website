@@ -62,6 +62,34 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
   const [reviewsExpanded, setReviewsExpanded] = useState(false);
   const { toasts, showToast, dismissToast } = useToast();
 
+  const [activeTab, setActiveTab] = useState<"products" | "inquiries">("products");
+  const [inquiriesList, setInquiriesList] = useState(inquiries);
+  const [selectedInquiry, setSelectedInquiry] = useState<ContactInquiry | null>(inquiries[0] ?? null);
+
+  async function deleteInquiry(inquiry: ContactInquiry) {
+    const confirmed = window.confirm(`Delete inquiry from ${inquiry.name}?`);
+    if (!confirmed) {
+      return;
+    }
+
+    setPending(true);
+    const response = await fetch(`/api/admin/inquiries/${inquiry.id}`, { method: "DELETE" });
+    const result = (await response.json()) as { message?: string };
+    setPending(false);
+
+    if (response.ok) {
+      const nextInquiries = inquiriesList.filter((item) => item.id !== inquiry.id);
+      setInquiriesList(nextInquiries);
+      const next = nextInquiries[0] ?? null;
+      setSelectedInquiry(next);
+      showToast("Inquiry deleted.", "success");
+      router.refresh();
+      return;
+    }
+
+    showToast(result.message ?? "Could not delete inquiry.", "error");
+  }
+
   // Track the "clean" version of the selected product (last saved state)
   const cleanSelectedRef = useRef<Product | null>(initialProducts[0] ?? null);
 
@@ -336,101 +364,205 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
             </div>
 
             <div className="grid admin-stats" style={{ marginTop: 18 }}>
-              <div className="admin-stat-card">
+              <button
+                type="button"
+                className="admin-stat-card"
+                style={{
+                  cursor: "pointer",
+                  textAlign: "left",
+                  background: activeTab === "products" ? "var(--surface-lowest)" : "rgba(255, 255, 255, 0.62)",
+                  borderColor: activeTab === "products" ? "var(--primary-bright)" : "rgba(216, 195, 173, 0.75)",
+                  boxShadow: activeTab === "products" ? "var(--shadow)" : "none",
+                  borderWidth: activeTab === "products" ? "2px" : "1px",
+                  padding: activeTab === "products" ? "11px 13px" : "12px 14px",
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  color: "inherit"
+                }}
+                onClick={() => setActiveTab("products")}
+              >
                 <span className="feature-icon"><span className="material-symbols-outlined">inventory_2</span></span>
-                <p className="muted">Total Products</p>
-                <h3>{products.length}</h3>
-              </div>
+                <div style={{ flex: 1 }}>
+                  <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>Total Products</p>
+                  <h3 style={{ margin: "4px 0 0 0" }}>{products.length}</h3>
+                </div>
+              </button>
               <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">rate_review</span></span>
-                <p className="muted">Approved Reviews</p>
-                <h3>{approvedReviews.length}</h3>
+                <div style={{ flex: 1 }}>
+                  <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>Approved Reviews</p>
+                  <h3 style={{ margin: "4px 0 0 0" }}>{approvedReviews.length}</h3>
+                </div>
               </div>
               <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">pending_actions</span></span>
-                <p className="muted">Pending Reviews</p>
-                <h3>{pendingReviews.length}</h3>
+                <div style={{ flex: 1 }}>
+                  <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>Pending Reviews</p>
+                  <h3 style={{ margin: "4px 0 0 0" }}>{pendingReviews.length}</h3>
+                </div>
               </div>
-              <div className="admin-stat-card">
+              <button
+                type="button"
+                className="admin-stat-card"
+                style={{
+                  cursor: "pointer",
+                  textAlign: "left",
+                  background: activeTab === "inquiries" ? "var(--surface-lowest)" : "rgba(255, 255, 255, 0.62)",
+                  borderColor: activeTab === "inquiries" ? "var(--primary-bright)" : "rgba(216, 195, 173, 0.75)",
+                  boxShadow: activeTab === "inquiries" ? "var(--shadow)" : "none",
+                  borderWidth: activeTab === "inquiries" ? "2px" : "1px",
+                  padding: activeTab === "inquiries" ? "11px 13px" : "12px 14px",
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  color: "inherit"
+                }}
+                onClick={() => {
+                  setActiveTab("inquiries");
+                  if (inquiriesList.length > 0 && !selectedInquiry) {
+                    setSelectedInquiry(inquiriesList[0]);
+                  }
+                }}
+              >
                 <span className="feature-icon"><span className="material-symbols-outlined">mail</span></span>
-                <p className="muted">New Inquiries</p>
-                <h3>{inquiries.length}</h3>
-              </div>
+                <div style={{ flex: 1 }}>
+                  <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>New Inquiries</p>
+                  <h3 style={{ margin: "4px 0 0 0" }}>{inquiriesList.length}</h3>
+                </div>
+              </button>
               <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">star</span></span>
-                <p className="muted">Avg Rating</p>
-                <h3>{avgRating > 0 ? avgRating.toFixed(1) : "—"}</h3>
+                <div style={{ flex: 1 }}>
+                  <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>Avg Rating</p>
+                  <h3 style={{ margin: "4px 0 0 0" }}>{avgRating > 0 ? avgRating.toFixed(1) : "—"}</h3>
+                </div>
               </div>
               <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">featured_play_list</span></span>
-                <p className="muted">Featured</p>
-                <h3>{featuredCount}</h3>
+                <div style={{ flex: 1 }}>
+                  <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>Featured</p>
+                  <h3 style={{ margin: "4px 0 0 0" }}>{featuredCount}</h3>
+                </div>
               </div>
               <div className="admin-stat-card">
                 <span className="feature-icon"><span className="material-symbols-outlined">photo_library</span></span>
-                <p className="muted">Gallery Images</p>
-                <h3>{totalImages}</h3>
+                <div style={{ flex: 1 }}>
+                  <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>Gallery Images</p>
+                  <h3 style={{ margin: "4px 0 0 0" }}>{totalImages}</h3>
+                </div>
               </div>
             </div>
           </div>
 
           <div className="admin-split-grid">
             <aside className="admin-editor">
-              <form className="card admin-card form-grid" onSubmit={createProduct}>
-                <h2 style={{ fontSize: "1.35rem", margin: 0 }}>Add Product</h2>
-                <div className="field">
-                  <label htmlFor="new-product-name">Name</label>
-                  <input id="new-product-name" name="name" required maxLength={120} />
-                </div>
-                <div className="field">
-                  <label htmlFor="new-product-slug">Slug</label>
-                  <input id="new-product-slug" name="slug" placeholder="auto from name" maxLength={80} />
-                </div>
-                <div className="field">
-                  <label htmlFor="new-product-description">Short Description</label>
-                  <textarea id="new-product-description" name="description" maxLength={500} required />
-                </div>
-                <button className="button primary" type="submit" disabled={pending}>
-                  <span className="material-symbols-outlined" aria-hidden="true">add</span>
-                  New Product
-                </button>
-              </form>
-
-              <div className="card admin-card">
-                <h2 style={{ fontSize: "1.35rem", marginBottom: 12 }}>Product Inventory</h2>
-                <div className="admin-list">
-                  {products.map((product) => (
-                    <button
-                      className="admin-list-item"
-                      key={product.id}
-                      type="button"
-                      aria-current={selected?.id === product.id ? "true" : "false"}
-                      onClick={() => selectProduct(product)}
-                    >
-                      <span className="admin-list-thumb">
-                        <FallbackImage
-                          src={productCoverPath(product)}
-                          fallbackSrc={DEFAULT_PRODUCT_IMAGE}
-                          alt=""
-                          width={90}
-                          height={90}
-                        />
-                      </span>
-                      <span>
-                        <strong>{product.name}</strong>
-                        <small className="muted" style={{ display: "block" }}>
-                          {product.visible ? "Visible" : "Hidden"} · {product.rating.toFixed(1)} rating
-                        </small>
-                      </span>
-                      <span className="material-symbols-outlined" aria-hidden="true">edit</span>
+              {activeTab === "products" ? (
+                <>
+                  <form className="card admin-card form-grid" onSubmit={createProduct}>
+                    <h2 style={{ fontSize: "1.35rem", margin: 0 }}>Add Product</h2>
+                    <div className="field">
+                      <label htmlFor="new-product-name">Name</label>
+                      <input id="new-product-name" name="name" required maxLength={120} />
+                    </div>
+                    <div className="field">
+                      <label htmlFor="new-product-slug">Slug</label>
+                      <input id="new-product-slug" name="slug" placeholder="auto from name" maxLength={80} />
+                    </div>
+                    <div className="field">
+                      <label htmlFor="new-product-description">Short Description</label>
+                      <textarea id="new-product-description" name="description" maxLength={500} required />
+                    </div>
+                    <button className="button primary" type="submit" disabled={pending}>
+                      <span className="material-symbols-outlined" aria-hidden="true">add</span>
+                      New Product
                     </button>
-                  ))}
+                  </form>
+
+                  <div className="card admin-card">
+                    <h2 style={{ fontSize: "1.35rem", marginBottom: 12 }}>Product Inventory</h2>
+                    <div className="admin-list">
+                      {products.map((product) => (
+                        <button
+                          className="admin-list-item"
+                          key={product.id}
+                          type="button"
+                          aria-current={selected?.id === product.id ? "true" : "false"}
+                          onClick={() => selectProduct(product)}
+                        >
+                          <span className="admin-list-thumb">
+                            <FallbackImage
+                              src={productCoverPath(product)}
+                              fallbackSrc={DEFAULT_PRODUCT_IMAGE}
+                              alt=""
+                              width={90}
+                              height={90}
+                            />
+                          </span>
+                          <span>
+                            <strong>{product.name}</strong>
+                            <small className="muted" style={{ display: "block" }}>
+                              {product.visible ? "Visible" : "Hidden"} · {product.rating.toFixed(1)} rating
+                            </small>
+                          </span>
+                          <span className="material-symbols-outlined" aria-hidden="true">edit</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="card admin-card">
+                  <h2 style={{ fontSize: "1.35rem", marginBottom: 12 }}>Customer Inquiries</h2>
+                  {inquiriesList.length === 0 ? (
+                    <p className="muted">No inquiries received yet.</p>
+                  ) : (
+                    <div className="admin-list">
+                      {inquiriesList.map((inquiry) => (
+                        <button
+                          className="admin-list-item"
+                          key={inquiry.id}
+                          type="button"
+                          aria-current={selectedInquiry?.id === inquiry.id ? "true" : "false"}
+                          onClick={() => setSelectedInquiry(inquiry)}
+                        >
+                          <span
+                            className="admin-list-thumb"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "var(--primary-soft)"
+                            }}
+                          >
+                            <span className="material-symbols-outlined" style={{ color: "var(--primary)", fontSize: 24 }}>mail</span>
+                          </span>
+                          <span>
+                            <strong>{inquiry.name}</strong>
+                            <small className="muted" style={{ display: "block" }}>
+                              {inquiry.phone}
+                            </small>
+                            <small className="muted" style={{ display: "block", fontSize: "0.75rem", marginTop: 2 }}>
+                              {new Date(inquiry.createdAt).toLocaleString("en-IN", {
+                                dateStyle: "short",
+                                timeStyle: "short"
+                              })}
+                            </small>
+                          </span>
+                          <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
             </aside>
 
             <section className="admin-editor">
-          {selected ? (
+              {activeTab === "products" ? (
+                selected ? (
             <>
               <div className="card admin-card">
                 <div className="admin-toolbar">
@@ -810,7 +942,96 @@ export function AdminDashboard({ initialProducts, inquiries }: AdminDashboardPro
               <h2>No product selected</h2>
               <p className="muted">Add a product to begin.</p>
             </div>
-          )}
+          )
+              ) : (
+                selectedInquiry ? (
+                  <div className="card admin-card">
+                    <div className="admin-toolbar">
+                      <div>
+                        <span className="eyebrow">Customer Inquiry</span>
+                        <h2 style={{ marginTop: 10 }}>{selectedInquiry.name}</h2>
+                      </div>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button
+                          className="button danger"
+                          type="button"
+                          onClick={() => deleteInquiry(selectedInquiry)}
+                          disabled={pending}
+                        >
+                          <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="admin-panel" style={{ marginTop: 18, background: "rgba(255, 255, 255, 0.4)" }}>
+                      <div className="form-grid">
+                        <div className="admin-two">
+                          <div>
+                            <span className="muted" style={{ fontSize: "0.85rem", display: "block" }}>Phone Number</span>
+                            <a
+                              href={`tel:${selectedInquiry.phone}`}
+                              className="button secondary"
+                              style={{ display: "inline-flex", marginTop: 6, minHeight: 40, padding: "8px 16px", width: "100%" }}
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>phone</span>
+                              {selectedInquiry.phone}
+                            </a>
+                          </div>
+                          <div>
+                            <span className="muted" style={{ fontSize: "0.85rem", display: "block" }}>WhatsApp Chat</span>
+                            <a
+                              href={`https://wa.me/${selectedInquiry.phone.replace(/[^0-9]/g, "")}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="button primary"
+                              style={{ display: "inline-flex", marginTop: 6, minHeight: 40, padding: "8px 16px", color: "#603a00", width: "100%" }}
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>chat</span>
+                              Message on WhatsApp
+                            </a>
+                          </div>
+                        </div>
+
+                        <div style={{ marginTop: 18 }}>
+                          <span className="muted" style={{ fontSize: "0.85rem", display: "block" }}>Received Date</span>
+                          <strong style={{ display: "block", marginTop: 4 }}>
+                            {new Date(selectedInquiry.createdAt).toLocaleString("en-IN", {
+                              dateStyle: "full",
+                              timeStyle: "short"
+                            })}
+                          </strong>
+                        </div>
+
+                        <div style={{ marginTop: 18 }}>
+                          <span className="muted" style={{ fontSize: "0.85rem", display: "block" }}>Message</span>
+                          <div
+                            style={{
+                              marginTop: 8,
+                              padding: 16,
+                              borderRadius: "var(--radius)",
+                              background: "var(--surface-lowest)",
+                              border: "1px solid var(--outline-soft)",
+                              whiteSpace: "pre-wrap",
+                              fontFamily: "inherit",
+                              fontSize: "1rem",
+                              lineHeight: "1.5",
+                              color: "var(--text)"
+                            }}
+                          >
+                            {selectedInquiry.message}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="card admin-card">
+                    <h2>No inquiry selected</h2>
+                    <p className="muted">Select an inquiry from the list to view details.</p>
+                  </div>
+                )
+              )}
         </section>
       </div>
       </main>
